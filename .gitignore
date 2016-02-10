@@ -1,0 +1,5 @@
+# Ignore history-folder
+/history/*
+
+# Ignore json-files
+*.json
