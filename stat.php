@@ -21,58 +21,50 @@
 */
 
 $hostlist=array(
-//                'example1.org.json' => 'http://example1.org/stat.json',
-//                'example2.nl.json' => 'http://example2.nl/stat.json',
-//                'special1.network.json' => 'http://special1.network.eu:8080/stat.json',
-                 'PI0.json' => 'http://192.168.0.10/stat.json',
-  		 'PI1.json' => 'http://192.168.0.11/stat.json',
-		 'PI2.json' => 'http://192.168.0.12/stat.json',
-		 'PI3.json' => 'http://192.168.0.13/stat.json',
-                 'PI4.json' => 'http://192.168.0.14/stat.json',
-                 'PI5.json' => 'http://192.168.0.15/stat.json',
-                 'PI6.json' => 'http://192.168.0.16/stat.json',
-                 'PI7.json' => 'http://192.168.0.17/stat.json',
-                 'PI8.json' => 'http://192.168.0.18/stat.json',
-                 'PI9.json' => 'http://192.168.0.19/stat.json',
-                 'PI10.json' => 'http://192.168.0.20/stat.json',
-                 'PI11.json' => 'http://192.168.0.21/stat.json',
-                 'PI12.json' => 'http://192.168.0.22/stat.json',
-                 'PI13.json' => 'http://192.168.0.23/stat.json',
-                 'PI14.json' => 'http://192.168.0.24/stat.json',
-                 'PI15.json' => 'http://192.168.0.25/stat.json',
-                 'PI16.json' => 'http://192.168.0.26/stat.json',
-                 'PI17.json' => 'http://192.168.0.27/stat.json',
-                 'PI18.json' => 'http://192.168.0.28/stat.json',
-                 'PI19.json' => 'http://192.168.0.29/stat.json'
-                );
+    'PI0.json' => 'http://192.168.0.10/stat.json',
+    'PI1.json' => 'http://192.168.0.11/stat.json',
+    'PI2.json' => 'http://192.168.0.12/stat.json',
+    'PI3.json' => 'http://192.168.0.13/stat.json',
+    'PI4.json' => 'http://192.168.0.14/stat.json',
+    'PI5.json' => 'http://192.168.0.15/stat.json',
+    'PI6.json' => 'http://192.168.0.16/stat.json',
+    'PI7.json' => 'http://192.168.0.17/stat.json',
+    'PI8.json' => 'http://192.168.0.18/stat.json',
+    'PI9.json' => 'http://192.168.0.19/stat.json',
+    'PI10.json' => 'http://192.168.0.20/stat.json',
+    'PI11.json' => 'http://192.168.0.21/stat.json',
+    'PI12.json' => 'http://192.168.0.22/stat.json',
+    'PI13.json' => 'http://192.168.0.23/stat.json',
+    'PI14.json' => 'http://192.168.0.24/stat.json',
+    'PI15.json' => 'http://192.168.0.25/stat.json',
+    'PI16.json' => 'http://192.168.0.26/stat.json',
+    'PI17.json' => 'http://192.168.0.27/stat.json',
+    'PI18.json' => 'http://192.168.0.28/stat.json',
+    'PI19.json' => 'http://192.168.0.29/stat.json'
+);
 
 $pinglist = array(
-//                  'github.com',
-//                  'google.nl',
-//                  'tweakers.net',
-//                  'jupiterbroadcasting.com',
-//                  'lowendtalk.com',
-                  '192.168.0.10',
-                  '192.168.0.11',
-                  '192.168.0.12',
-                  '192.168.0.13',
-                  '192.168.0.14',
-                  '192.168.0.15',
-                  '192.168.0.16',
-                  '192.168.0.17',
-                  '192.168.0.18',
-                  '192.168.0.19',
-                  '192.168.0.20',
-                  '192.168.0.21',
-                  '192.168.0.22',
-                  '192.168.0.23',
-                  '192.168.0.24',
-                  '192.168.0.25',
-                  '192.168.0.26',
-                  '192.168.0.27',
-                  '192.168.0.28',
-                  '192.168.0.29'
-                  );
+    '192.168.0.10',
+    '192.168.0.11',
+    '192.168.0.12',
+    '192.168.0.13',
+    '192.168.0.14',
+    '192.168.0.15',
+    '192.168.0.16',
+    '192.168.0.17',
+    '192.168.0.18',
+    '192.168.0.19',
+    '192.168.0.20',
+    '192.168.0.21',
+    '192.168.0.22',
+    '192.168.0.23',
+    '192.168.0.24',
+    '192.168.0.25',
+    '192.168.0.26',
+    '192.168.0.27',
+    '192.168.0.28',
+    '192.168.0.29'
+);
 
 ## Set this to "secure" the history saving. This key has to be given as a parameter to save the history.
 $historykey = "8A29691737D";
@@ -142,7 +134,7 @@ function shortstat($bestand,$host) {
 
 function percentagebar($percentage) {
 
-    $percentage = str_replace("%", "",$percentage); 
+    $percentage = str_replace("%", "",$percentage);
     echo "<center>".$percentage . "%</center>";
     echo "<div class=\"percentbar\" style=\"width: 100px;\">";
     echo "<div style=\"width:".round($percentage)."px;\">";
@@ -156,7 +148,7 @@ function savefile($bestand,$naam){
         mkdir("${curdir}/history") or die("Cannot create history folder. Create it manually and make sure the webserver can write to it.");
     } else {
         $local_file=file_get_contents($bestand);
-        $saved_local_file=file_put_contents("${curdir}/$naam", $local_file);        
+        $saved_local_file=file_put_contents("${curdir}/$naam", $local_file);
     }
 
 }
@@ -167,13 +159,13 @@ function savehistory($naam) {
     if(!is_dir("{$curdir}/history")){
         mkdir("${curdir}/history") or die("Cannot create history folder. Create it manually and make sure the webserver can write to it.");
     }
-    $local_file=file_get_contents($naam); 
-    
+    $local_file=file_get_contents($naam);
+
     if (!file_put_contents("history/${naam}.${DATETIME}", $local_file)) {
         die("File $naam could not be saved in history. Please check directory permissions on directory \'history\'.");
     }
 
-    
+
 
 }
 
@@ -189,15 +181,15 @@ function linestat_history($bestand, $host) {
             $closed=0;
             $havestat = 0;
             if(is_array($json_a)) {
-                
-               
+
+
                 $json_a['cpu0freq'] = intval($json_a['cpu0freq'])/1000;
                 $json_a['cpu1freq'] = intval($json_a['cpu1freq'])/1000;
                 $json_a['cputemp'] = substr($json_a['cputemp'],0,4);
                 $json_a['pmutemp'] = substr($json_a['pmutemp'],0,4);
                 $json_a['voltage'] = intval($json_a['voltage'])/1000000;
                 $json_a['current'] = intval($json_a['current'])/1000000;
-                
+
 
 		return $json_a;
 }
@@ -259,11 +251,11 @@ function linestat($bestand,$host) {
                 } else {
                     echo "<td>".round(floatval(str_replace(",", "",$json_a['Load'])),3)."</td>";
                 }
-                
+
                 if (intval($json_a['Users logged on']) > $maxusers) {
                     echo "<td><strong>".$json_a['Users logged on']."</strong></td>";
                 } else {
-                   echo "<td>".$json_a['Users logged on']."</td>"; 
+                   echo "<td>".$json_a['Users logged on']."</td>";
                 }
 
 		echo "<td>".(intval($json_a['cpu0freq'])/1000)."</td>";
@@ -271,7 +263,7 @@ function linestat($bestand,$host) {
 		echo "<td>".substr($json_a['cputemp'],0,4)."</td>";
 		echo "<td>".substr($json_a['pmutemp'],0,4)."</td>";
 		echo "<td>".$json_a['hddtemp']."</td>";
-		echo "<td>".(intval($json_a['voltage'])/1000000)."</td>";	
+		echo "<td>".(intval($json_a['voltage'])/1000000)."</td>";
 		echo "<td>".(intval($json_a['current'])/1000000)."</td>";
 		$json_a['cpu0freq'] = intval($json_a['cpu0freq'])/1000;
 		$json_a['cpu1freq'] = intval($json_a['cpu1freq'])/1000;
@@ -280,11 +272,11 @@ function linestat($bestand,$host) {
 		$json_a['voltage'] = intval($json_a['voltage'])/1000000;
 		$json_a['current'] = intval($json_a['current'])/1000000;
                 ?>
-  
+
                 <td><?php
                 percentagebar($json_a['Disk']['percentage']);
                 echo "<br />";
-                echo "T: " . $json_a['Disk']['total'] . " <br /> "; 
+                echo "T: " . $json_a['Disk']['total'] . " <br /> ";
 
                 if (intval(str_replace("%", "",$json_a['Disk']['percentage'])) > $maxdisk ) {
                     echo "<strong>U: " . $json_a['Disk']['used'] . "</strong> <br /> ";
@@ -294,7 +286,7 @@ function linestat($bestand,$host) {
                     echo "F: " . $json_a['Disk']['free'];
                 }
                 ?>
-            </td>    
+            </td>
             <td><?php
             $used_ram = $json_a['Total RAM'] - $json_a['Free RAM'];
             $value = $used_ram;
@@ -329,7 +321,7 @@ function linestat($bestand,$host) {
             echo $rxmb . " GB";
         } elseif ($rxmb > 1024000) {
             $rxmb = round((($rxmb / 1024) / 1024),2);
-            echo $rxmb . " TB";   
+            echo $rxmb . " TB";
         }
 
         ?>
@@ -343,7 +335,7 @@ function linestat($bestand,$host) {
         echo $txmb . " GB";
     } elseif ($txmb > 1024000) {
         $txmb = round((($txmb / 1024) / 1024),2);
-        echo $txmb . " TB";   
+        echo $txmb . " TB";
     }
     ?>
 </td>
@@ -359,11 +351,11 @@ return $json_a;
 }
 }
 
-function ping($host, $port, $timeout) { 
-  $tB = microtime(true); 
-  $fP = fSockOpen($host, $port, $errno, $errstr, $timeout); 
-  if (!$fP) {  return '<font color="red">' . $host . ' DOWN from here. </font>'; } 
-  $tA = microtime(true); 
+function ping($host, $port, $timeout) {
+  $tB = microtime(true);
+  $fP = fSockOpen($host, $port, $errno, $errstr, $timeout);
+  if (!$fP) {  return '<font color="red">' . $host . ' DOWN from here. </font>'; }
+  $tA = microtime(true);
   return '<font color="green">' . $host . ' ' . number_format((($tA - $tB) * 1000),2).' ms UP</font>';
 }
 
@@ -372,18 +364,15 @@ function dosomething($bestand,$host,$actie){
         # this function should be called per item on a foreach loop.
         switch ($actie) {
             case 'shortstat':
-            savefile($host,$bestand);
-            $parsed_host=parse_url($host,PHP_URL_HOST);
-            shortstat($bestand,$parsed_host);
+              savefile($host,$bestand);
+              $parsed_host=parse_url($host,PHP_URL_HOST);
+              shortstat($bestand,$parsed_host);
             break;
             case 'historystat':
-            echo "<table>";
-            savefile($host,$bestand);
-            $parsed_host=parse_url($host,PHP_URL_HOST);
-            $datasets = historystat($bestand,$parsed_host);
-            echo "</table>";
-	    return $datasets;
-            break;
+              savefile($host,$bestand);
+              $parsed_host=parse_url($host,PHP_URL_HOST);
+              $datasets = historystat($bestand,$parsed_host);
+	            return $datasets;
         }
     }   
 }
@@ -418,7 +407,7 @@ function genGraph($pi_index, $dtype, $datasets)
                                 $data = $data."".floatval($dp["".$dtype]).",";
                     }
 		    $SI ="N/A";
-		    
+
 		    if(strcmp($dtype,'voltage')==0) $SI = "V";
 		    if(strcmp($dtype,'current')==0) $SI = "A";
                     if(strcmp($dtype,'cputemp')==0) $SI = "C";
@@ -459,7 +448,7 @@ var options_".$dtype."_".$pi_index." = {
     //Boolean - Whether to show a dot for each point
     pointDot : true,
 
-       
+
     pointDotRadius : 4,
 
     //Number - Pixel width of point dot stroke
@@ -496,10 +485,10 @@ var data_".$dtype."_".$pi_index." = {
             data: [$data]
         }    ]
 };
-var $dtype".$pi_index."_chart=new Chart(document.getElementById('$dtype-$pi_index').getContext('2d')).Line(data_".$dtype."_".$pi_index.", options_".$dtype."_".$pi_index."); 
+var $dtype".$pi_index."_chart=new Chart(document.getElementById('$dtype-$pi_index').getContext('2d')).Line(data_".$dtype."_".$pi_index.", options_".$dtype."_".$pi_index.");
 </script>";
 
-                                                       
+
 
 
 }
@@ -516,7 +505,7 @@ var $dtype".$pi_index."_chart=new Chart(document.getElementById('$dtype-$pi_inde
     <script type="text/javascript" src="Chart.js"></script>						<!-- Charts -->
     <link rel="stylesheet" type="text/css" href="inc/css/kickstart.css" media="all" />                  <!-- KICKSTART -->
     <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />                      <!-- CUSTOM STYLES -->
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"> 
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <script type="text/javascript">
     <!--
     $(document).ready(function() {
@@ -549,7 +538,7 @@ var $dtype".$pi_index."_chart=new Chart(document.getElementById('$dtype-$pi_inde
                 <li><a href="#tabc2">History</a></li>
             </ul>
             <div id="tabc1" class="tab-content">
-                <?php 
+                <?php
                 echo "<i>Ping monitor:</i>";
                 foreach ($pinglist as $key => $value) {
                     echo ping("$value",80,5) . ", ";
@@ -565,7 +554,7 @@ var $dtype".$pi_index."_chart=new Chart(document.getElementById('$dtype-$pi_inde
                 }
                 ?>
             </div>
-            <div id="tabc2" class="tab-content"> 
+            <div id="tabc2" class="tab-content">
                 <?php
 		$pi_index = 0;
                 foreach ($hostlist as $key => $value) {
