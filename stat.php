@@ -148,10 +148,7 @@ function savefile($bestand,$naam){
         mkdir("${curdir}/history") or die("Cannot create history folder. Create it manually and make sure the webserver can write to it.");
     } else {
         $local_file=file_get_contents($bestand);
-        if(empty($var)){
-          echo $bestand . "returned empty";
-          return; // do not save empty file to local dir
-        }
+        //TODO: if(empty($var)){return; // do not save empty file to local dir
         $saved_local_file=file_put_contents("${curdir}/$naam", $local_file);
     }
 
@@ -165,7 +162,8 @@ function savehistory($naam) {
     }
     $local_file=file_get_contents($naam);
 
-    if (!file_put_contents("history/${naam}.${DATETIME}", $local_file)) {
+    // file_put_contents returns false in case of an exception (else the number of written Bytes)
+    if (file_put_contents("history/${naam}.${DATETIME}", $local_file) === false) {
         die("File $naam could not be saved in history. Please check directory permissions on directory \'history\'.");
     }
 }
