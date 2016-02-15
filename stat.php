@@ -96,6 +96,11 @@ function readHistoryFiles(){
   } else {
       echo "Error: cannot open directory './history'.";
   }
+
+  // sort entries for each $jsonFilename (in ascending order)
+  foreach($historyFiles as $key => $value){
+      asort($historyFiles[$key]);
+  }
 }
 
 // Returns a dataset containing all (historic) statistic information of a given jsonFile-name
