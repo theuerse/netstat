@@ -332,7 +332,7 @@ function ping($host, $port, $timeout) {
 
 // draw a graph displaying the change of the value of a certain
 // attribute ($dtype) of a certain Pi ($pi_index)
-function genGraph($pi_index, $dtype, $datasets)
+function genGraphInformation($pi_index, $dtype, $datasets)
 {
   $labels = "";
   $i = 0;
@@ -365,7 +365,7 @@ function genGraph($pi_index, $dtype, $datasets)
     echo "<strong>".$dtype." [".$SI."]</strong>:<br><canvas id='$dtype-$pi_index' width='1000' height='400'></canvas>
     <script>
       // specify the actual data for the individual Pi
-      var data_".$dtype."_".$pi_index." = {
+      graphInformation[$dtype."-".$pi_index"] = {
         labels: [$labels],
         datasets: [
           {
@@ -380,8 +380,6 @@ function genGraph($pi_index, $dtype, $datasets)
           }
         ]
       };
-      // draw chart in canvas
-      var $dtype".$pi_index."_chart=new Chart(document.getElementById('$dtype-$pi_index').getContext('2d')).Line(data_".$dtype."_".$pi_index.", graphOptions);
     </script>";
 }
 
@@ -422,22 +420,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
     <script type="text/javascript">
-      $(document).ready(function() {
-          var showText="Show";
-          var hideText="Hide";
-          $(".toggle").prev().append(' (<a href="#" class="toggleLink">'+showText+'</a>)');
-          $('.toggle').hide();
-          $('a.toggleLink').click(function() {
-              if ($(this).html()==showText) {
-                  $(this).html(hideText);
-              }
-              else {
-                  $(this).html(showText);
-              }
-              $(this).parent().next('.toggle').toggle('slow');
-              return false;
-          });
-      });
+      var graphInformation = {}; // caches graph info before drawing
 
       // define global options for all history-graphs
       var graphOptions = {
@@ -476,6 +459,34 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
           //String - A legend template
           //legendTemplate : '<ul class=\'<%=name.toLowerCase()%>-legend\'><% for (var i=0; i<datasets.length; i++){%><li><span style=\'background-color:<%=datasets[i].strokeColor%>\'></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>'
       };
+
+
+      $(document).ready(function() {
+          var showText="Show";
+          var hideText="Hide";
+          $(".toggle").prev().append(' (<a href="#" class="toggleLink">'+showText+'</a>)');
+          $('.toggle').hide();
+          $('a.toggleLink').click(function() {
+              if ($(this).html()==showText) {
+                  $(this).html(hideText);
+              }
+              else {
+                  $(this).html(showText);
+                  console.log(graphInformation);
+
+                  // draw chart in canvas
+                  $(this).children('canvas').each(function(index, value){
+                    console.log(value.id);
+                    if(graphInformation[value.id] !== undefined){
+                      new Chart(document.getElementById(value.id).getContext('2d')).Line(graphInformation[value.id], graphOptions);
+                      delete graphInformation[value.id];
+                    }
+                  });
+              }
+              $(this).parent().next('.toggle').toggle('slow');
+              return false;
+          });
+      });
     </script>
 
     <style type="text/css">
@@ -527,20 +538,19 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
                   $datasets = getHistoryDatasets($jsonFilename);
 
                   // draw a seperate graph for every (important) attribute
-                  genGraph($pi_index, "voltage", $datasets);
+                  genGraphInformation($pi_index, "voltage", $datasets);
                   echo "<br>";
 
-                  genGraph($pi_index, "current", $datasets);
+                  genGraphInformation($pi_index, "current", $datasets);
                   echo "<br>";
 
-                  genGraph($pi_index, "cputemp", $datasets);
+                  genGraphInformation($pi_index, "cputemp", $datasets);
                   echo "<br>";
 
-                  genGraph($pi_index, "pmutemp", $datasets);
+                  genGraphInformation($pi_index, "pmutemp", $datasets);
                   echo "<br>";
 
-                  genGraph($pi_index, "hddtemp", $datasets);
-
+                  genGraphInformation($pi_index, "hddtemp", $datasets);
                   $pi_index++;
                   echo "</div>";
                 }
