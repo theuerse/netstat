@@ -144,6 +144,8 @@ function shortstat($jsonFilename,$hostname) {
     echo "</table><br />";
 }
 
+// Prints a percentage-bar visualizing a given $percentage
+// bar via http://www.joshuawinn.com/quick-and-simple-css-percentage-bar-using-php/
 function percentagebar($percentage) {
 
     $percentage = str_replace("%", "",$percentage);
@@ -411,15 +413,21 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 <html>
 <head>
     <title>Stats</title>
-    <!-- bar via http://www.joshuawinn.com/quick-and-simple-css-percentage-bar-using-php/ -->
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-    <script type="text/javascript" src="inc/js/prettify.js"></script>                                   <!-- PRETTIFY -->
-    <script type="text/javascript" src="inc/js/kickstart.js"></script>                                  <!-- KICKSTART -->
-    <script type="text/javascript" src="Chart.js"></script>						<!-- Charts -->
-    <link rel="stylesheet" type="text/css" href="inc/css/kickstart.css" media="all" />                  <!-- KICKSTART -->
-    <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />                      <!-- CUSTOM STYLES -->
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+    <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />          <!-- CUSTOM STYLES -->
+    <link rel="stylesheet" type="text/css" href="inc/css/kickstart.css" media="all" />      <!-- KICKSTART -->
+
+    <style type="text/css">
+        .percentbar { background:#CCCCCC; border:1px solid #666666; height:10px; }
+        .percentbar div { background: #28B8C0; height: 10px; }
+    </style>
+
+
+    <script type="text/javascript" src="inc/js/jquery-1.12.0.min.js"></script>              <!-- JQUERY -->
+    <script type="text/javascript" src="inc/js/prettify.js"></script>                       <!-- PRETTIFY -->
+    <script type="text/javascript" src="inc/js/kickstart.js"></script>                      <!-- KICKSTART -->
+    <script type="text/javascript" src="Chart.js"></script>                                 <!-- Chart.JS -->
 
     <script type="text/javascript">
       var graphInformation = {}; // caches graph info before drawing
@@ -493,11 +501,6 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
           });
       });
     </script>
-
-    <style type="text/css">
-        .percentbar { background:#CCCCCC; border:1px solid #666666; height:10px; }
-        .percentbar div { background: #28B8C0; height: 10px; }
-    </style>
 </head>
 
 <body>
@@ -542,7 +545,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
                   // garther all available information (history) on the Pis via its $jsonFilename
                   $datasets = getHistoryDatasets($jsonFilename);
 
-                  // garther the necessary information, add a HTML-canvas for each Information-type
+                  // process the necessary information, add a HTML-canvas for each Information-type
                   genGraphInformation($pi_index, "voltage", $datasets);
                   echo "<br>";
 
