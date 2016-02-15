@@ -410,6 +410,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 
 // 'Normal' - call of the script, display the two statistics-tabs
 ?>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Stats</title>
