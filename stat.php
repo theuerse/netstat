@@ -330,8 +330,10 @@ function ping($host, $port, $timeout) {
   return '<font color="green">' . $host . ' ' . number_format((($tA - $tB) * 1000),2).' ms UP</font>';
 }
 
-// draw a graph displaying the change of the value of a certain
+// Read all historic information of a certain
 // attribute ($dtype) of a certain Pi ($pi_index)
+// and store it in a cache, until it is used to actually
+// draw the graph, also adds a HTML-canvas as base for the graph
 function genGraphInformation($pi_index, $dtype, $datasets)
 {
   $labels = "";
@@ -365,7 +367,7 @@ function genGraphInformation($pi_index, $dtype, $datasets)
     echo "<strong>".$dtype." [".$SI."]</strong>:<br><canvas id='$dtype-$pi_index' width='1000' height='400'></canvas>
     <script>
       // specify the actual data for the individual Pi
-      graphInformation[$dtype."-".$pi_index"] = {
+      graphInformation['$dtype-$pi_index'] = {
         labels: [$labels],
         datasets: [
           {
@@ -421,6 +423,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 
     <script type="text/javascript">
       var graphInformation = {}; // caches graph info before drawing
+      var charts = {}; // holds references to drawn charts
 
       // define global options for all history-graphs
       var graphOptions = {
@@ -467,23 +470,25 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
           $(".toggle").prev().append(' (<a href="#" class="toggleLink">'+showText+'</a>)');
           $('.toggle').hide();
           $('a.toggleLink').click(function() {
+              $(this).parent().next('.toggle').toggle('slow');
               if ($(this).html()==showText) {
-                  $(this).html(hideText);
+                 $(this).html(hideText); // change text of link from 'Show' to 'Hide'
+
+                 // draw chart in canvas (once)
+                 $(this).parent().next('.toggle').children('canvas').each(function(index,value){
+                   if(graphInformation[value.id] !== undefined){
+                     // draw graph in/on pre-existing canvas
+                     var context = document.getElementById(value.id).getContext('2d');
+                     charts[value.id] = new Chart(context).Line(graphInformation[value.id],graphOptions);
+
+                     // get rid of cached information => chart is created only once
+                     delete graphInformation[value.id];
+                   }
+                 });
               }
               else {
-                  $(this).html(showText);
-                  console.log(graphInformation);
-
-                  // draw chart in canvas
-                  $(this).children('canvas').each(function(index, value){
-                    console.log(value.id);
-                    if(graphInformation[value.id] !== undefined){
-                      new Chart(document.getElementById(value.id).getContext('2d')).Line(graphInformation[value.id], graphOptions);
-                      delete graphInformation[value.id];
-                    }
-                  });
+                 $(this).html(showText); // change text of link from 'Hide' to 'Show'
               }
-              $(this).parent().next('.toggle').toggle('slow');
               return false;
           });
       });
@@ -537,7 +542,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
                   // garther all available information (history) on the Pis via its $jsonFilename
                   $datasets = getHistoryDatasets($jsonFilename);
 
-                  // draw a seperate graph for every (important) attribute
+                  // garther the necessary information, add a HTML-canvas for each Information-type
                   genGraphInformation($pi_index, "voltage", $datasets);
                   echo "<br>";
 
