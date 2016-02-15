@@ -3,16 +3,22 @@ A webserver with PHP (>= 5.2) and the PHP-option 'allow_url_fopen' set to 1 (all
 
 Install:
 After cloning the source-files to e.g. the document-root of your webserver, you need to create
-a history-folder (e.g. [sudo] mkdir history) inside the source-directory
+a history-folder (e.g. [sudo] mkdir history) inside the source-directory, make the source-directory and the
+history-subdirectory writable by the webserver (e.g. user 'www-data' when using apache)
 and set up two jobs (e.g. cronjobs) in order to enable the maintenance of a history of status-JSON-files.
+
+Giving the webserver permission to write in the source-directory:
+# ’outside’ the source-directory
+sudo chown -R www-data:www-data netstat
+
 
 
 Examples for using cron:
 Open the crontab-editor using 'sudo crontab -e' (to run commands with administrative privileges).
 
 Add following lines:
-* * * * 0 find /var/www/html/pi-network/history -type f -mtime +7 -delete
-0 * * * * wget -qO /dev/null "http://143.205.122.89/pi-network/stat.php?action=save&key=8A29691737D"
+0 * * * * find /var/www/html/netstat/history -type f -mtime +1 -delete
+15 * * * * wget -qO /dev/null "http://143.25.22.89/netstat/stat.php?action=save&key=8A29691737D"
 
 Don't forget to save your changes.
 Exit the Editor.
@@ -20,11 +26,12 @@ Exit the Editor.
 
 
 
-* * * * 0 find /var/www/html/pi-network/history -type f -mtime +7 -delete
-The command in this line is executed EVERY SUNDAY and deletes all JSON-files in the
-history-folder that are older than ONE WEEK.
+0 * * * * find /var/www/html/netstat/history -type f -mtime +1 -delete
+The command in this line is executed EVERY HOUR and deletes all JSON-files in the
+history-folder that are older than TWO DAYS.
 
-0 * * * * wget -qO /dev/null "http://143.205.122.89/pi-network/stat.php?action=save&key=8A29691737D"
+0 * * * * wget -qO /dev/null "http://143.25.22.89/pi-network/stat.php?action=save&key=8A29691737D"
+Where 143.25.22.89 is (just) one IP-address of the server hosting stat.php.
 The command in this line is executed EVERY HOUR and calls the PHP-script 'stat.php' in a way,
-that lets it archive all JSON-files that are currently in the same directory as 'stat.php' in the
+that lets it refresh all JSON-files in the same directory as 'stat.php' and archives them in the
 history-folder.
