@@ -424,7 +424,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
     </style>
 
 
-    <script type="text/javascript" src="inc/js/jquery-1.12.0.min.js"></script>              <!-- JQUERY -->
+    <script type="text/javascript" src="inc/js/jquery.min.js"></script>                     <!-- JQUERY -->
     <script type="text/javascript" src="inc/js/prettify.js"></script>                       <!-- PRETTIFY -->
     <script type="text/javascript" src="inc/js/kickstart.js"></script>                      <!-- KICKSTART -->
     <script type="text/javascript" src="Chart.js"></script>                                 <!-- Chart.JS -->
