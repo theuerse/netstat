@@ -521,12 +521,12 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
             <?php
               foreach ($hostlist as $jsonFilename => $sourceUrl) {
                 $host=parse_url($sourceUrl,PHP_URL_HOST);
-                echo "<h5>Host: ${host}</h6>";
+                echo "<h5>Host: ${host}</h5>";
 
                 downloadRemoteFile($sourceUrl,$jsonFilename); // get the current json-file
                 $hostname=parse_url($host,PHP_URL_HOST);
                 shortstat($jsonFilename,$hostname);
-                echo "<hr class=\'alt1\' />";
+                echo "<hr class=\"alt1\" />";
               }
             ?>
         </div>
