@@ -196,12 +196,12 @@ function printStatTable($jsonFilename,$hostname) {
             <th>Load</th>
             <th>Users</th>
             <th>Cpu 0 Freq. (MHz)</th>
-		        <th>Cpu 1 Freq. (MHz)</th>
-		        <th>SoC Temp. (C)</th>
-		        <th>PMU Temp. (C)</th>
-		        <th>HDD Temp. (C)</th>
-		        <th>Voltage (V)</th>
-		        <th>Current (A)</th>
+            <th>Cpu 1 Freq. (MHz)</th>
+            <th>SoC Temp. (C)</th>
+            <th>PMU Temp. (C)</th>
+            <th>HDD Temp. (C)</th>
+            <th>Voltage (V)</th>
+            <th>Current (A)</th>
             <th>HDD (T/U/F)</th>
             <th>RAM (T/U/F)</th>
             <th>NET RX</th>
@@ -237,13 +237,13 @@ function printStatTable($jsonFilename,$hostname) {
                   $jsonObject = conformJsonValues($jsonObject);
 
                   // print additional status information
-		              echo "<td>".$jsonObject['cpu0freq']."</td>";
-		              echo "<td>".$jsonObject['cpu1freq']."</td>";
-		              echo "<td>".$jsonObject['cputemp']."</td>";
-		              echo "<td>".$jsonObject['pmutemp']."</td>";
-		              echo "<td>".$jsonObject['hddtemp']."</td>";
-		              echo "<td>".$jsonObject['voltage']."</td>";
-		              echo "<td>".$jsonObject['current']."</td>";
+                  echo "<td>".$jsonObject['cpu0freq']."</td>";
+                  echo "<td>".$jsonObject['cpu1freq']."</td>";
+                  echo "<td>".$jsonObject['cputemp']."</td>";
+                  echo "<td>".$jsonObject['pmutemp']."</td>";
+                  echo "<td>".$jsonObject['hddtemp']."</td>";
+                  echo "<td>".$jsonObject['voltage']."</td>";
+                  echo "<td>".$jsonObject['current']."</td>";
               ?>
             <td>
               <?php
@@ -352,14 +352,14 @@ function genGraph($pi_index, $dtype, $datasets)
     // choose correct SI-unit for the current value-history being displayed ($dtype)
     $SI ="N/A";
 
-		if(strcmp($dtype,'voltage')==0) $SI = "V";
+    if(strcmp($dtype,'voltage')==0) $SI = "V";
     if(strcmp($dtype,'current')==0) $SI = "A";
     if(strcmp($dtype,'cputemp')==0) $SI = "C";
     if(strcmp($dtype,'pmutemp')==0) $SI = "C";
     if(strcmp($dtype,'hddtemp')==0) $SI = "C";
     if(strcmp($dtype,'Load')==0) $SI = "%";
-	  if(strcmp($dtype,'cpu0freq')==0) $SI = "MHz";
-	  if(strcmp($dtype,'cpu1freq')==0) $SI = "MHz";
+    if(strcmp($dtype,'cpu0freq')==0) $SI = "MHz";
+    if(strcmp($dtype,'cpu1freq')==0) $SI = "MHz";
 
     // insert a labeled canvas as container for the chart
     echo "<strong>".$dtype." [".$SI."]</strong>:<br><canvas id='$dtype-$pi_index' width='1000' height='400'></canvas>
@@ -450,7 +450,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
     // for every json-file of a Pi we care about
     foreach ($hostlist as $jsonFilename => $sourceUrl) {
         downloadRemoteFile($sourceUrl, $jsonFilename); // get the current json-file
-	      addToHistory($jsonFilename); // add the downloaded file to the history
+        addToHistory($jsonFilename); // add the downloaded file to the history
         echo "History for: ". $jsonFilename . " saved. <br />\n" ;
     }
     exit("History done.<br /> \n"); // end the script at this point
@@ -527,7 +527,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
         <div id="tabc2" class="tab-content">
             <?php
                 readHistoryFiles(); // read all available history files
-		            $pi_index = 0;
+                $pi_index = 0;
 
                 // Draw a graph displaying the change of some attributes over time
                 // for EVERY single PI
@@ -541,7 +541,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 
                   // draw a seperate graph for every (important) attribute
                   genGraph($pi_index, "voltage", $datasets);
-		              echo "<br>";
+                  echo "<br>";
 
                   genGraph($pi_index, "current", $datasets);
                   echo "<br>";
