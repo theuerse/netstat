@@ -151,7 +151,7 @@ function shortstat($jsonFilename,$hostname) {
 function percentagebar($percentage) {
 
     $percentage = str_replace("%", "",$percentage);
-    echo "<center>".$percentage . "%</center>";
+    echo "<p>".$percentage . "%</p>";
     echo "<div class=\"percentbar\" style=\"width: 100px;\">";
     echo "<div style=\"width:".round($percentage)."px;\">";
     echo "</div></div>";
@@ -226,9 +226,9 @@ function printStatTable($jsonFilename,$hostname) {
                     // print the state (running/not running) of some selected applications on the pi
                     foreach ($jsonObject['Services'] as $service => $status) {
                         if($status == "running") {
-                            echo '<font color="green">' . $service . '</font> up. <br /> ';
+                            echo '<span class="up">' . $service . '</span> up. <br /> ';
                         } elseif ($status == "not running") {
-                            echo '<font color="red">' . $service . '</font> <b>down.</b> <br /> ';
+                            echo '<span class="down">' . $service . '</span> <b>down.</b> <br /> ';
                         }
                     }
               ?>
@@ -332,9 +332,9 @@ function printStatTable($jsonFilename,$hostname) {
 function ping($host, $port, $timeout) {
   $tB = microtime(true);
   $fP = fSockOpen($host, $port, $errno, $errstr, $timeout);
-  if (!$fP) {  return '<font color="red">' . $host . ' DOWN from here. </font>'; }
+  if (!$fP) {  return '<span class="down">' . $host . ' DOWN from here. </span>'; }
   $tA = microtime(true);
-  return '<font color="green">' . $host . ' ' . number_format((($tA - $tB) * 1000),2).' ms UP</font>';
+  return '<span class="up">' . $host . ' ' . number_format((($tA - $tB) * 1000),2).' ms UP</span>';
 }
 
 // Read all historic information of a certain
@@ -424,14 +424,17 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 <html>
 <head>
     <title>Stats</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta charset="utf-8"/>
 
     <link rel="stylesheet" type="text/css" href="inc/css/kickstart.css" media="all" />      <!-- KICKSTART -->
     <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />          <!-- CUSTOM STYLES -->
 
     <style type="text/css">
+        .up {color: green;}
+        .down {color: red;}
         .percentbar { background:#CCCCCC; border:1px solid #666666; height:10px; }
         .percentbar div { background: #28B8C0; height: 10px; }
+        #tabc1.tab-content.clearfix table.striped tbody tr.last td p {color: black; text-align: center; margin-bottom: 0px;}
         #tabc1.tab-content.clearfix table.striped tbody tr.last td {font-size: 14.4px; line-height: 130%;}
         #tabc1.tab-content.clearfix table.striped tbody tr.first th {font-size: 14.4px; line-height: 130%;}
     </style>
