@@ -1,5 +1,7 @@
 <?php
 /*
+Following is the LICENSE-note of the program that served as base for this one:
+(https://github.com/RaymiiOrg/raymon)
 #Copyright (c) 2012 Remy van Elst
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -157,24 +159,27 @@ function percentagebar($percentage) {
 
 // Requests a remote file and saves it in the history-folder under a $newFilename
 function downloadRemoteFile($sourceUrl,$newFilename){
+    $local_file="";
 
-    $currentdir=getcwd(); //TODO: currentdir ist schwachsinn -> remove
-    if(!is_dir("{$currentdir}/history")){
-        if(!mkdir("${currentdir}/history")){
-            echo "Cannot create history folder. Create it manually and make sure the webserver can write to it.";
-        }
-    } else {
-        $local_file=file_get_contents($sourceUrl); // TODO: check if empty($local_file) ??
-        file_put_contents("${currentdir}/$newFilename", $local_file);
+    // wait for a maximum total time of 10[s]
+    for($time_waited = 0; $time_waited <= 10000; $time_waited = $time_waited + 250){
+      $local_file=file_get_contents($sourceUrl);
+      if(!empty($local_file)){
+       break;
+      }
+      usleep(250000); // sleep 250[ms]
+    }
+
+    if(!empty($local_file)){
+      file_put_contents($newFilename, $local_file);
     }
 }
 
 // Add the file with given $jsonFilename to the history-folder
 function addToHistory($jsonFilename) {
-    $curdir=getcwd();
     $DATETIME=date('U');
-    if(!is_dir("{$curdir}/history")){
-        mkdir("${curdir}/history") or die("Cannot create history folder. Create it manually and make sure the webserver can write to it.");
+    if(!is_dir("history")){
+        mkdir("history") or die("Cannot create history folder. Create it manually and make sure the webserver can write to it.");
     }
     $local_file=file_get_contents($jsonFilename);
 
@@ -341,13 +346,13 @@ function genGraphInformation($pi_index, $dtype, $datasets)
   $labels = "";
   $i = 0;
   $data ="";
-  //$rdatasets = array_reverse($datasets); //TODO: necessary?
 
-  for($i=0; $i<count($datasets);$i++){  //rdataset ?
+  for($i=0; $i<count($datasets);$i++){
       $dp = $datasets[$i];
       $mydate = date_parse($dp['date']);
-      if($i == count($datasets)-1) $labels = $labels."'".$mydate['day']."-".$mydate['month']."-".$mydate['hour'].":".$mydate['minute']."'";
-      else $labels = $labels."'".$mydate['day']."-".$mydate['month']."-".$mydate['hour'].":".$mydate['minute']."',";
+
+      if($i == count($datasets)-1) $labels = $labels."'".pad($mydate['day']).".".pad($mydate['month'])." ".pad($mydate['hour']).":".pad($mydate['minute'])."'";
+      else $labels = $labels."'".pad($mydate['day']).".".pad($mydate['month'])." ".pad($mydate['hour']).":".pad($mydate['minute'])."',";
 
       if($i == count($datasets)-1) $data = $data."".$dp["".$dtype];
       else $data = $data."".floatval($dp["".$dtype]).",";
@@ -387,6 +392,11 @@ function genGraphInformation($pi_index, $dtype, $datasets)
     </script>";
 }
 
+// returns a zero-padded version of a given $string
+// just a wrapper for str_pad()
+function pad($string){
+  return str_pad($string,2,'0',STR_PAD_LEFT);
+}
 
 
 
@@ -436,6 +446,8 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 
       // define global options for all history-graphs
       var graphOptions = {
+          // avoid partial cutoff of leading digits of y-axis
+          scaleLabel : function(object) {return " " + object.value;},
 
           scaleShowGridLines : true, //Boolean - Whether grid lines are shown across the chart
 
@@ -460,7 +472,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
           pointDotStrokeWidth : 1, //Number - Pixel width of point dot stroke
 
           //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-          pointHitDetectionRadius : 20,
+          pointHitDetectionRadius : 5,
 
           datasetStroke : true, //Boolean - Whether to show a stroke for datasets
 
@@ -468,8 +480,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 
           datasetFill : true, //Boolean - Whether to fill the dataset with a colour
 
-          //String - A legend template
-          //legendTemplate : '<ul class=\'<%=name.toLowerCase()%>-legend\'><% for (var i=0; i<datasets.length; i++){%><li><span style=\'background-color:<%=datasets[i].strokeColor%>\'></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>'
+          tooltipTemplate: "<%if (label){%><%=label%> => <%}%><%= value %>"
       };
 
 
