@@ -371,7 +371,7 @@ function genGraphInformation($pi_index, $dtype, $datasets)
     if(strcmp($dtype,'cpu1freq')==0) $SI = "MHz";
 
     // insert a labeled canvas as container for the chart
-    echo "<strong>".$dtype." [".$SI."]</strong>:<br><canvas id='$dtype-$pi_index' width='1000' height='400'></canvas>
+    echo "<p class='".$dtype."Atr'><strong>".$dtype." [".$SI."]:</strong></p><canvas id='$dtype-$pi_index' class='". $dtype ."Atr' width='1000' height='400'></canvas>
     <script>
       // specify the actual data for the individual Pi
       graphInformation['$dtype-$pi_index'] = {
@@ -428,7 +428,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 
     <link rel="stylesheet" type="text/css" href="inc/css/kickstart.css" media="all" />      <!-- KICKSTART -->
     <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />          <!-- CUSTOM STYLES -->
-    
+
     <style type="text/css">
         .percentbar { background:#CCCCCC; border:1px solid #666666; height:10px; }
         .percentbar div { background: #28B8C0; height: 10px; }
@@ -498,13 +498,25 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 
                  // draw chart in canvas (once)
                  $(this).parent().next('.toggle').children('canvas').each(function(index,value){
+                   console.log(value.id+"\n");
                    if(graphInformation[value.id] !== undefined){
-                     // draw graph in/on pre-existing canvas
+                     // show item for creation
+                     $('#'+value.id).show();
+
+		     // draw graph in/on pre-existing canvas
                      var context = document.getElementById(value.id).getContext('2d');
                      charts[value.id] = new Chart(context).Line(graphInformation[value.id],graphOptions);
 
                      // get rid of cached information => chart is created only once
                      delete graphInformation[value.id];
+
+		     // hide graph if necessary
+                     console.log(value.id);
+		     var attributeClass = $('#'+value.id).attr('class');
+                     if(!$('#'+attributeClass+'Checkbox').is(':checked')){
+			console.log('hiding ' + value.id + '\n');
+                       $('#'+value.id).hide();
+                     }
                    }
                  });
               }
@@ -513,6 +525,18 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
               }
               return false;
           });
+
+	  // set up eventhandlers for attribute-checkboxes
+	 var attributes = ['voltageAtr','currentAtr','cputempAtr','pmutempAtr','hddtempAtr'];
+         attributes.forEach(function(attribute) {
+	   $('#'+attribute+'Checkbox').change(function(checkbox){
+	     if(checkbox.currentTarget.checked){
+               $('.'+checkbox.currentTarget.value).show();
+             }else {
+               $('.'+checkbox.currentTarget.value).hide();
+             }
+           });
+	 });
       });
     </script>
 </head>
@@ -549,6 +573,13 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
                 readHistoryFiles(); // read all available history files
                 $pi_index = 0;
 
+		// Draw checkboxes to show/hide pi-attributes
+		echo '<input id="voltageAtrCheckbox" type="checkbox" value="voltageAtr" checked="checked">voltage &nbsp;';
+		echo '<input id="currentAtrCheckbox" type="checkbox" value="currentAtr" checked="checked">current &nbsp;';
+		echo '<input id="cputempAtrCheckbox" type="checkbox" value="cputempAtr" checked="checked">cputemp &nbsp;';
+		echo '<input id="pmutempAtrCheckbox" type="checkbox" value="pmutempAtr" checked="checked">pmutemp &nbsp;';
+      		echo '<input id="hddtempAtrCheckbox" type="checkbox" value="hddtempAtr" checked="checked">hddtemp';
+
                 // Draw a graph displaying the change of some attributes over time
                 // for EVERY single PI
                 foreach ($hostlist as $jsonFilename => $sourceUrl) {
@@ -561,16 +592,12 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 
                   // process the necessary information, add a HTML-canvas for each Information-type
                   genGraphInformation($pi_index, "voltage", $datasets);
-                  echo "<br>";
 
                   genGraphInformation($pi_index, "current", $datasets);
-                  echo "<br>";
 
                   genGraphInformation($pi_index, "cputemp", $datasets);
-                  echo "<br>";
 
                   genGraphInformation($pi_index, "pmutemp", $datasets);
-                  echo "<br>";
 
                   genGraphInformation($pi_index, "hddtemp", $datasets);
                   $pi_index++;
