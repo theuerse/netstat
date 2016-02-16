@@ -143,7 +143,7 @@ function conformJsonValues($jsonObject) {
 function shortstat($jsonFilename,$hostname) {
     echo "<table class=\"striped\">";
     printStatTable($jsonFilename,$hostname);
-    echo "</table><br />";
+    echo "</table>";
 }
 
 // Prints a percentage-bar visualizing a given $percentage
@@ -426,12 +426,14 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
     <title>Stats</title>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
-    <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />          <!-- CUSTOM STYLES -->
     <link rel="stylesheet" type="text/css" href="inc/css/kickstart.css" media="all" />      <!-- KICKSTART -->
-
+    <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />          <!-- CUSTOM STYLES -->
+    
     <style type="text/css">
         .percentbar { background:#CCCCCC; border:1px solid #666666; height:10px; }
         .percentbar div { background: #28B8C0; height: 10px; }
+        #tabc1.tab-content.clearfix table.striped tbody tr.last td {font-size: 14.4px; line-height: 130%;}
+        #tabc1.tab-content.clearfix table.striped tbody tr.first th {font-size: 14.4px; line-height: 130%;}
     </style>
 
 
