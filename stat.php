@@ -501,23 +501,20 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 
                  // draw chart in canvas (once)
                  $(this).parent().next('.toggle').children('canvas').each(function(index,value){
-                   console.log(value.id+"\n");
                    if(graphInformation[value.id] !== undefined){
                      // show item for creation
                      $('#'+value.id).show();
 
-		     // draw graph in/on pre-existing canvas
+                     // draw graph in/on pre-existing canvas
                      var context = document.getElementById(value.id).getContext('2d');
                      charts[value.id] = new Chart(context).Line(graphInformation[value.id],graphOptions);
 
                      // get rid of cached information => chart is created only once
                      delete graphInformation[value.id];
 
-		     // hide graph if necessary
-                     console.log(value.id);
-		     var attributeClass = $('#'+value.id).attr('class');
+                     // hide graph if necessary
+                     var attributeClass = $('#'+value.id).attr('class');
                      if(!$('#'+attributeClass+'Checkbox').is(':checked')){
-			console.log('hiding ' + value.id + '\n');
                        $('#'+value.id).hide();
                      }
                    }
