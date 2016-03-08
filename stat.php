@@ -164,15 +164,17 @@ function downloadRemoteFile($sourceUrl,$newFilename){
     // wait for a maximum total time of 10[s]
     for($time_waited = 0; $time_waited <= 10000; $time_waited = $time_waited + 250){
       $local_file=file_get_contents($sourceUrl);
-      if(!empty($local_file)){
+      if($local_file === FALSE){
+       $local_file=""; // empty file, indicating 'nothing here to get' -> not added to history
+       break;
+      }
+      else if(!empty($local_file)){
        break;
       }
       usleep(250000); // sleep 250[ms]
     }
 
-    if(!empty($local_file)){
-      file_put_contents($newFilename, $local_file);
-    }
+    file_put_contents($newFilename, $local_file);
 }
 
 // Add the file with given $jsonFilename to the history-folder
@@ -181,7 +183,9 @@ function addToHistory($jsonFilename) {
     if(!is_dir("history")){
         mkdir("history") or die("Cannot create history folder. Create it manually and make sure the webserver can write to it.");
     }
+
     $local_file=file_get_contents($jsonFilename);
+    if(empty($local_file)) return; // do not add empty files to history
 
     // file_put_contents returns false in case of an exception (else the number of written Bytes)
     if (file_put_contents("history/${jsonFilename}.${DATETIME}", $local_file) === false) {
