@@ -24,50 +24,33 @@ Following is the LICENSE-note of the program that served as base for this one:
 
 // <CONFIGURATION>
 $hostlist=array(  // jsonFilename => sourceUrl
-    'PI0.json' => 'http://192.168.0.10/stat.json',
-    'PI1.json' => 'http://192.168.0.11/stat.json',
-    'PI2.json' => 'http://192.168.0.12/stat.json',
-    'PI3.json' => 'http://192.168.0.13/stat.json',
-    'PI4.json' => 'http://192.168.0.14/stat.json',
-    'PI5.json' => 'http://192.168.0.15/stat.json',
-    'PI6.json' => 'http://192.168.0.16/stat.json',
-    'PI7.json' => 'http://192.168.0.17/stat.json',
-    'PI8.json' => 'http://192.168.0.18/stat.json',
-    'PI9.json' => 'http://192.168.0.19/stat.json',
-    'PI10.json' => 'http://192.168.0.20/stat.json',
-    'PI11.json' => 'http://192.168.0.21/stat.json',
-    'PI12.json' => 'http://192.168.0.22/stat.json',
-    'PI13.json' => 'http://192.168.0.23/stat.json',
-    'PI14.json' => 'http://192.168.0.24/stat.json',
-    'PI15.json' => 'http://192.168.0.25/stat.json',
-    'PI16.json' => 'http://192.168.0.26/stat.json',
-    'PI17.json' => 'http://192.168.0.27/stat.json',
-    'PI18.json' => 'http://192.168.0.28/stat.json',
-    'PI19.json' => 'http://192.168.0.29/stat.json'
+    'PI0.json' => '192.168.0.10',
+    'PI1.json' => '192.168.0.11',
+    'PI2.json' => '192.168.0.12',
+    'PI3.json' => '192.168.0.13',
+    'PI4.json' => '192.168.0.14',
+    'PI5.json' => '192.168.0.15',
+    'PI6.json' => '192.168.0.16',
+    'PI7.json' => '192.168.0.17',
+    'PI8.json' => '192.168.0.18',
+    'PI9.json' => '192.168.0.19',
+    'PI10.json' => '192.168.0.20',
+    'PI11.json' => '192.168.0.21',
+    'PI12.json' => '192.168.0.22',
+    'PI13.json' => '192.168.0.23',
+    'PI14.json' => '192.168.0.24',
+    'PI15.json' => '192.168.0.25',
+    'PI16.json' => '192.168.0.26',
+    'PI17.json' => '192.168.0.27',
+    'PI18.json' => '192.168.0.28',
+    'PI19.json' => '192.168.0.29'
 );
 
-$pinglist = array(
-    '192.168.0.10',
-    '192.168.0.11',
-    '192.168.0.12',
-    '192.168.0.13',
-    '192.168.0.14',
-    '192.168.0.15',
-    '192.168.0.16',
-    '192.168.0.17',
-    '192.168.0.18',
-    '192.168.0.19',
-    '192.168.0.20',
-    '192.168.0.21',
-    '192.168.0.22',
-    '192.168.0.23',
-    '192.168.0.24',
-    '192.168.0.25',
-    '192.168.0.26',
-    '192.168.0.27',
-    '192.168.0.28',
-    '192.168.0.29'
-);
+// path to a JSON-file on respective hosts
+$jsonFilePath = 'stat.json';
+
+// hostIP => rtt[ms]
+$pingResults = array();
 
 ## Set this to "secure" the history saving. This key has to be given as a parameter to save the history.
 $historykey = "8A29691737D";
@@ -78,6 +61,14 @@ date_default_timezone_set('Europe/Vienna');
 // </CONFIGURATION>
 
 $historyFiles = array(); // global array for storing the name of all files in the history-folder
+
+
+// e.g. PI18.json' => 'http://192.168.0.28/stat.json'
+function getJsonUrl($filename){
+  global $hostlist;
+  global $jsonFilePath;
+  return "http://" . $hostlist[$filename] . "/$jsonFilePath";
+}
 
 // Collects the names of all files in the history-folder
 function readHistoryFiles(){
@@ -96,7 +87,7 @@ function readHistoryFiles(){
       }
       closedir($handle);
   } else {
-      echo "Error: cannot open directory './history'.";
+      echo "<p>Error: cannot open directory './history'.</p>";
   }
 
   // sort entries for each $jsonFilename (in ascending order)
@@ -158,7 +149,14 @@ function percentagebar($percentage) {
 }
 
 // Requests a remote file and saves it in the history-folder under a $newFilename
-function downloadRemoteFile($sourceUrl,$newFilename){
+// Returns false if host is unreachable, true in case of success
+function downloadRemoteFile($hostIP,$newFilename){
+    global $pingResults;
+    global $hostlist;
+
+    if($pingResults[$hostlist[$newFilename]] == -1) return false; // do not try to download from unreachable host
+
+    $sourceUrl = getJsonUrl($newFilename);
     $local_file="";
 
     // wait for a maximum total time of 10[s]
@@ -175,6 +173,7 @@ function downloadRemoteFile($sourceUrl,$newFilename){
     }
 
     file_put_contents($newFilename, $local_file);
+    return true;
 }
 
 // Add the file with given $jsonFilename to the history-folder
@@ -328,17 +327,34 @@ function printStatTable($jsonFilename,$hostname) {
             echo "Error decoding JSON stat file for host $host, $json_a";
         }
     } else  {
-      echo "Error while getting stats for host $host from file $bestand";
+      echo "Could not retrieve JSON-file.";
     }
 }
 
 // Pings a given $host and prints the result
-function ping($host, $port, $timeout) {
+function getPingResultHtml($hostIP, $port, $timeout) {
+  global $pingResults;
+  $rtt = $pingResults[$hostIP];
+  if ($rtt < 0) {  return '<span class="down">' . $hostIP . ' DOWN from here. </span>'; }
+  else return '<span class="up">' . $hostIP . ' ' . number_format($rtt,2).' ms UP</span>';
+}
+
+// returns the roundtriptime in [ms] if reachable or else -1
+function ping($hostIP,$port,$timeout){
   $tB = microtime(true);
-  $fP = fSockOpen($host, $port, $errno, $errstr, $timeout);
-  if (!$fP) {  return '<span class="down">' . $host . ' DOWN from here. </span>'; }
+  $fP = fSockOpen($hostIP, $port, $errno, $errstr, $timeout);
+  if (!$fP) return -1;
   $tA = microtime(true);
-  return '<span class="up">' . $host . ' ' . number_format((($tA - $tB) * 1000),2).' ms UP</span>';
+  return (($tA - $tB) * 1000);
+}
+
+// ping all hosts in hostlist, timeout=100[ms]
+function pingHosts(){
+    global $hostlist;
+    global $pingResults;
+    foreach ($hostlist as $jsonFilename => $hostIP) {
+      $pingResults[$hostIP] = ping($hostIP,80,0.1);
+    }
 }
 
 // Read all historic information of a certain
@@ -408,15 +424,19 @@ function pad($string){
 // Begin of the PHP-Scripts 'execution'
 //
 
+pingHosts(); // test if hosts reachable
+
 // Check if the site has been called with the right params to trigger a history-save
 // where history-save only means that the json-files in the same directory
 // as this script get added to the history-folder
 if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
     // for every json-file of a Pi we care about
-    foreach ($hostlist as $jsonFilename => $sourceUrl) {
-        downloadRemoteFile($sourceUrl, $jsonFilename); // get the current json-file
-        addToHistory($jsonFilename); // add the downloaded file to the history
-        echo "History for: ". $jsonFilename . " saved. <br />\n" ;
+    global $hostlist;
+    foreach ($hostlist as $jsonFilename => $hostIP) {
+        if(downloadRemoteFile($hostIP, $jsonFilename)){ // get the current json-file
+          addToHistory($jsonFilename); // add the downloaded file to the history
+          echo "History for: ". $jsonFilename . " saved. <br />\n" ;
+        }
     }
     exit("History done.<br /> \n"); // end the script at this point
 }
@@ -555,17 +575,17 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
         <div id="tabc1" class="tab-content">
             <?php
               echo "<i>Ping monitor:</i>";
-              foreach ($pinglist as $key => $value) {
-                echo ping("$value",80,1) . ", ";
+              foreach ($hostlist as $key => $hostIP) {
+                echo getPingResultHtml("$hostIP",80,1) . ", ";
               }
             ?>
             <h4>Server Status</h4>
             <?php
-              foreach ($hostlist as $jsonFilename => $sourceUrl) {
-                $host=parse_url($sourceUrl,PHP_URL_HOST);
+              foreach ($hostlist as $jsonFilename => $hostIP) {
+                $host=parse_url(getJsonUrl($jsonFilename),PHP_URL_HOST);
                 echo "<h5>Host: ${host}</h5>";
 
-                downloadRemoteFile($sourceUrl,$jsonFilename); // get the current json-file
+                downloadRemoteFile($hostIP,$jsonFilename); // get the current json-file
                 $hostname=parse_url($host,PHP_URL_HOST);
                 shortstat($jsonFilename,$hostname);
                 echo "<hr class=\"alt1\" />";
@@ -586,7 +606,8 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 
                 // Draw a graph displaying the change of some attributes over time
                 // for EVERY single PI
-                foreach ($hostlist as $jsonFilename => $sourceUrl) {
+                foreach ($hostlist as $jsonFilename => $hostIP) {
+                  $sourceUrl = getJsonUrl($jsonFilename);
                   $host=parse_url($sourceUrl,PHP_URL_HOST);
                   echo "<p>History for host ${host}</p>\n";
                   echo "<div class=\"toggle\">";
