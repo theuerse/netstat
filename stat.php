@@ -450,6 +450,8 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
     <title>Stats</title>
     <meta charset="utf-8"/>
 
+    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
     <link rel="stylesheet" type="text/css" href="inc/css/kickstart.css" media="all" />      <!-- KICKSTART -->
     <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />          <!-- CUSTOM STYLES -->
 
