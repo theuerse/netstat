@@ -3,3 +3,6 @@
 
 # Ignore json-files
 *.json
+
+# Allow empty json-template
+!emptyTemplate.json

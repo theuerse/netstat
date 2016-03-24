@@ -153,27 +153,34 @@ function percentagebar($percentage) {
 function downloadRemoteFile($hostIP,$newFilename){
     global $pingResults;
     global $hostlist;
-
-    if($pingResults[$hostlist[$newFilename]] == -1) return false; // do not try to download from unreachable host
-
-    $sourceUrl = getJsonUrl($newFilename);
     $local_file="";
 
-    // wait for a maximum total time of 10[s]
-    for($time_waited = 0; $time_waited <= 10000; $time_waited = $time_waited + 250){
-      $local_file=file_get_contents($sourceUrl);
-      if($local_file === FALSE){
-       $local_file=""; // empty file, indicating 'nothing here to get' -> not added to history
-       break;
+  if($pingResults[$hostlist[$newFilename]] > 0){ // host reachable
+      // try to download file from host
+      $sourceUrl = getJsonUrl($newFilename);
+
+      // wait for a maximum total time of 10[s]
+      for($time_waited = 0; $time_waited <= 10000; $time_waited = $time_waited + 250){
+        $local_file=file_get_contents($sourceUrl);
+        if($local_file === FALSE){
+          // error getting file contents
+          break;
+        }
+        else if(!empty($local_file)){
+          // retry as long as file comes back empty (but max 10[s])
+         break;
+        }
+        usleep(250000); // sleep 250[ms]
       }
-      else if(!empty($local_file)){
-       break;
-      }
-      usleep(250000); // sleep 250[ms]
+    }
+
+    if(empty($local_file)){ // represent missing JSON-data with "empty"-file
+      $local_file = file_get_contents("emptyTemplate.json");
+      $now = date("D M d H:i:s T Y");
+      $local_file = str_replace("#DATE#", $now, $local_file);
     }
 
     file_put_contents($newFilename, $local_file);
-    return true;
 }
 
 // Add the file with given $jsonFilename to the history-folder
@@ -227,12 +234,14 @@ function printStatTable($jsonFilename,$hostname) {
             <td>
               <?php
                     // print the state (running/not running) of some selected applications on the pi
-                    foreach ($jsonObject['Services'] as $service => $status) {
-                        if($status == "running") {
-                            echo '<span class="up">' . $service . '</span> up. <br /> ';
-                        } elseif ($status == "not running") {
-                            echo '<span class="down">' . $service . '</span> <b>down.</b> <br /> ';
-                        }
+                    if(in_array('Services',$jsonObject)){
+                      foreach ($jsonObject['Services'] as $service => $status) {
+                          if($status == "running") {
+                              echo '<span class="up">' . $service . '</span> up. <br /> ';
+                          } elseif ($status == "not running") {
+                              echo '<span class="down">' . $service . '</span> <b>down.</b> <br /> ';
+                          }
+                      }
                     }
               ?>
             </td>
@@ -433,10 +442,9 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
     // for every json-file of a Pi we care about
     global $hostlist;
     foreach ($hostlist as $jsonFilename => $hostIP) {
-        if(downloadRemoteFile($hostIP, $jsonFilename)){ // get the current json-file
-          addToHistory($jsonFilename); // add the downloaded file to the history
-          echo "History for: ". $jsonFilename . " saved. <br />\n" ;
-        }
+      downloadRemoteFile($hostIP, $jsonFilename); // get the current json-file
+      addToHistory($jsonFilename); // add the downloaded file to the history
+      echo "History for: ". $jsonFilename . " saved. <br />\n" ;
     }
     exit("History done.<br /> \n"); // end the script at this point
 }
