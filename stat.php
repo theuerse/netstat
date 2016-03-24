@@ -234,13 +234,11 @@ function printStatTable($jsonFilename,$hostname) {
             <td>
               <?php
                     // print the state (running/not running) of some selected applications on the pi
-                    if(in_array('Services',$jsonObject)){
-                      foreach ($jsonObject['Services'] as $service => $status) {
-                          if($status == "running") {
-                              echo '<span class="up">' . $service . '</span> up. <br /> ';
-                          } elseif ($status == "not running") {
-                              echo '<span class="down">' . $service . '</span> <b>down.</b> <br /> ';
-                          }
+                    foreach ($jsonObject['Services'] as $service => $status) {
+                      if($status == "running") {
+                          echo '<span class="up">' . $service . '</span> up. <br /> ';
+                      } elseif ($status == "not running") {
+                          echo '<span class="down">' . $service . '</span> <b>down.</b> <br /> ';
                       }
                     }
               ?>
