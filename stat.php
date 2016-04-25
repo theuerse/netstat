@@ -130,13 +130,6 @@ function conformJsonValues($jsonObject) {
   return $jsonObject;
 }
 
-
-function shortstat($jsonFilename,$hostname) {
-    echo "<table class=\"striped\">";
-    printStatTable($jsonFilename,$hostname);
-    echo "</table>";
-}
-
 // Prints a percentage-bar visualizing a given $percentage
 // bar via http://www.joshuawinn.com/quick-and-simple-css-percentage-bar-using-php/
 function percentagebar($percentage) {
@@ -201,12 +194,8 @@ function addToHistory($jsonFilename) {
 
 // Print current information about a Pi in form of a Table
 // based on the information in file $jsonFilename
-function printStatTable($jsonFilename,$hostname) {
-
-    if ($file = file_get_contents($jsonFilename)) {
-        if ($jsonObject = json_decode($file, true)) {
+function printStatTable($jsonObject) {
           ?>
-
           <tr>
             <th>Uptime</th>
             <th>Services</th>
@@ -330,12 +319,6 @@ function printStatTable($jsonFilename,$hostname) {
             </td>
           </tr>
         <?php
-        } else {
-            echo "Error decoding JSON stat file for host $host, $json_a";
-        }
-    } else  {
-      echo "Could not retrieve JSON-file.";
-    }
 }
 
 // Pings a given $host and prints the result
@@ -591,12 +574,21 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
             <?php
               foreach ($hostlist as $jsonFilename => $hostIP) {
                 $host=parse_url(getJsonUrl($jsonFilename),PHP_URL_HOST);
-                echo "<h5>Host: ${host}</h5>";
-
                 downloadRemoteFile($hostIP,$jsonFilename); // get the current json-file
-                $hostname=parse_url($host,PHP_URL_HOST);
-                shortstat($jsonFilename,$hostname);
-                echo "<hr class=\"alt1\" />";
+
+                if ($file = file_get_contents($jsonFilename)) {
+                    if ($jsonObject = json_decode($file, true)) {
+                      echo "<h5>Host: ${host} (${jsonObject['date']})</h5>";
+                      echo "<table class=\"striped\">";
+                      printStatTable($jsonObject);
+                      echo "</table>";
+                      echo "<hr class=\"alt1\" />";
+                    } else {
+                      echo "Error decoding JSON stat file for host $host.\n";
+                    }
+                } else  {
+                      echo "Could not retrieve JSON-file for host $host.\n";
+                }
               }
             ?>
         </div>
