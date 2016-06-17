@@ -469,6 +469,8 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
           // avoid partial cutoff of leading digits of y-axis
           scaleLabel : function(object) {return " " + object.value;},
 
+          animation: false, // disabling animation to improve performance and be more consistent with show/hide
+
           scaleShowGridLines : true, //Boolean - Whether grid lines are shown across the chart
 
           scaleGridLineColor : 'rgba(0,0,0,.05)', //String - Colour of the grid lines
