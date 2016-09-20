@@ -142,29 +142,17 @@ function percentagebar($percentage) {
 }
 
 // Requests a remote file and saves it in the history-folder under a $newFilename
-// Returns false if host is unreachable, true in case of success
+// Saves a "zeroed" file, if a host is unreachable, if the file could not be
+// downloaded or if the file came back empty
 function downloadRemoteFile($hostIP,$newFilename){
     global $pingResults;
     global $hostlist;
     $local_file="";
 
-  if($pingResults[$hostlist[$newFilename]] > 0){ // host reachable
-      // try to download file from host
+    // try to download file from host if the host is reachable
+    if($pingResults[$hostlist[$newFilename]] > 0){
       $sourceUrl = getJsonUrl($newFilename);
-
-      // wait for a maximum total time of 10[s]
-      for($time_waited = 0; $time_waited <= 10000; $time_waited = $time_waited + 250){
-        $local_file=file_get_contents($sourceUrl);
-        if($local_file === FALSE){
-          // error getting file contents
-          break;
-        }
-        else if(!empty($local_file)){
-          // retry as long as file comes back empty (but max 10[s])
-         break;
-        }
-        usleep(250000); // sleep 250[ms]
-      }
+      $local_file=file_get_contents($sourceUrl);
     }
 
     if(empty($local_file)){ // represent missing JSON-data with "empty"-file
