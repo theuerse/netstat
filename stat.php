@@ -148,11 +148,12 @@ function downloadRemoteFile($hostIP,$newFilename){
     global $pingResults;
     global $hostlist;
     $local_file="";
+    $ctx = stream_context_create(array('http' => array('timeout' => 1)));
 
     // try to download file from host if the host is reachable
     if($pingResults[$hostlist[$newFilename]] > 0){
       $sourceUrl = getJsonUrl($newFilename);
-      $local_file=file_get_contents($sourceUrl);
+      $local_file=file_get_contents($sourceUrl, 0, $ctx);
     }
 
     if(empty($local_file)){ // represent missing JSON-data with "empty"-file
