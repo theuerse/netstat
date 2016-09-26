@@ -1,5 +1,5 @@
 var targets = ["current", "voltage", "cputemp", "hddtemp", "pmutemp", "cpu0freq",
-  "cpu1freq","txbytes","rxbytes","Free RAM","Uptime","Users logged on","Load"];
+"cpu1freq","txbytes","rxbytes","Free RAM","Uptime","Users logged on","Load"];
 
 var graphInformation = {}; // caches graph info before drawing
 var charts = {}; // holds references to drawn charts
@@ -45,57 +45,109 @@ var graphOptions = {
   tooltipTemplate: "<%if (label){%><%=label%> => <%}%><%= value %>"
 };
 
-
-$(document).ready(function() {
+function setupSortableDivs(){
   $( "#sortable" ).sortable();
-  $( "#sortable" ).disableSelection();
-  console.log("setup sortable");
-  //alert("hello world");
-  /*var showText="Show";
-  var hideText="Hide";
-  $(".toggle").prev().append(' (<a href="#" class="toggleLink">'+showText+'</a>)');
-  $('.toggle').hide();
-  $('a.toggleLink').click(function() {
-    $(this).parent().next('.toggle').toggle('slow');
-    if ($(this).html()==showText) {
-      $(this).html(hideText); // change text of link from 'Show' to 'Hide'
+  //$( "#sortable" ).disableSelection();
+}
 
-      // draw chart in canvas (once)
-      $(this).parent().next('.toggle').children('canvas').each(function(index,value){
-        if(graphInformation[value.id] !== undefined){
-          // show item for creation
-          $('#'+value.id).show();
+function setupPropertySelection(){
 
-          // draw graph in/on pre-existing canvas
-          var context = document.getElementById(value.id).getContext('2d');
-          charts[value.id] = new Chart(context).Line(graphInformation[value.id],graphOptions);
-
-          // get rid of cached information => chart is created only once
-          delete graphInformation[value.id];
-
-          // hide graph if necessary
-          var attributeClass = $('#'+value.id).attr('class');
-          if(!$('#'+attributeClass+'Checkbox').is(':checked')){
-            $('#'+value.id).hide();
-          }
+  var propertynames = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    prefetch: {
+      url: 'propertynames.json',
+      filter: function(list) {
+        return $.map(list, function(propertyname) {
+          return { name: propertyname }; });
         }
-      });
-    }
-    else {
-      $(this).html(showText); // change text of link from 'Hide' to 'Show'
-    }
-    return false;
-  });
-
-  // set up eventhandlers for attribute-checkboxes
-  /*var attributes = ['voltageAtr','currentAtr','cputempAtr','pmutempAtr','hddtempAtr'];
-  attributes.forEach(function(attribute) {
-    $('#'+attribute+'Checkbox').change(function(checkbox){
-      if(checkbox.currentTarget.checked){
-        $('.'+checkbox.currentTarget.value).show();
-      }else {
-        $('.'+checkbox.currentTarget.value).hide();
       }
     });
-  });*/
+    propertynames.initialize();
+
+    $("input").tagsinput({
+      typeaheadjs: {
+        name: 'propertynames',
+        displayKey: 'name',
+        valueKey: 'name',
+        source: propertynames.ttAdapter()
+      },
+      freeInput: true
+    });
+
+    $('input').on('itemAdded', function(event) {
+      if($("#p_" + event.item).length){
+        $("#p_" + event.item).show();
+        console.log(event.item + " shown");
+      }
+      else{
+        $("#sortable").append('<li id="p_' + event.item +'" class="ui-state-default">' +
+        '<div><p>' +  event.item + '</p></div></li>');
+        setupSortableDivs();
+        console.log(event.item + " added");
+      }
+
+    });
+
+    $('input').on('itemRemoved', function(event) {
+      if($("#p_" + event.item).length){
+        $("#p_" + event.item).hide();
+        console.log(event.item + " removed");
+      }
+    });
+  }
+
+
+  $(document).ready(function() {
+    setupSortableDivs();
+
+    setupPropertySelection();
+    //alert("hello world");
+    /*var showText="Show";
+    var hideText="Hide";
+    $(".toggle").prev().append(' (<a href="#" class="toggleLink">'+showText+'</a>)');
+    $('.toggle').hide();
+    $('a.toggleLink').click(function() {
+    $(this).parent().next('.toggle').toggle('slow');
+    if ($(this).html()==showText) {
+    $(this).html(hideText); // change text of link from 'Show' to 'Hide'
+
+    // draw chart in canvas (once)
+    $(this).parent().next('.toggle').children('canvas').each(function(index,value){
+    if(graphInformation[value.id] !== undefined){
+    // show item for creation
+    $('#'+value.id).show();
+
+    // draw graph in/on pre-existing canvas
+    var context = document.getElementById(value.id).getContext('2d');
+    charts[value.id] = new Chart(context).Line(graphInformation[value.id],graphOptions);
+
+    // get rid of cached information => chart is created only once
+    delete graphInformation[value.id];
+
+    // hide graph if necessary
+    var attributeClass = $('#'+value.id).attr('class');
+    if(!$('#'+attributeClass+'Checkbox').is(':checked')){
+    $('#'+value.id).hide();
+  }
+}
+});
+}
+else {
+$(this).html(showText); // change text of link from 'Hide' to 'Show'
+}
+return false;
+});
+
+// set up eventhandlers for attribute-checkboxes
+/*var attributes = ['voltageAtr','currentAtr','cputempAtr','pmutempAtr','hddtempAtr'];
+attributes.forEach(function(attribute) {
+$('#'+attribute+'Checkbox').change(function(checkbox){
+if(checkbox.currentTarget.checked){
+$('.'+checkbox.currentTarget.value).show();
+}else {
+$('.'+checkbox.currentTarget.value).hide();
+}
+});
+});*/
 });

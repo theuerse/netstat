@@ -428,10 +428,15 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
     <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
     <!--<link rel="stylesheet" type="text/css" href="inc/css/kickstart.css" media="all" /> -->     <!-- KICKSTART -->
-    <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />       <!-- CUSTOM STYLES -->
+    <link rel="stylesheet" type="text/css" href="inc/css/github.css">
     <link rel="stylesheet" type="text/css" href="inc/css/jquery-ui.css" media="all" />
+    <link rel="stylesheet" type="text/css" href="inc/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="inc/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="inc/css/bootstrap-tagsinput.css">
+    <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />       <!-- CUSTOM STYLES -->
 
     <style type="text/css">
+        body {font-size: 20px;}
         .up {color: green;}
         .down {color: red;}
         .percentbar { background:#CCCCCC; border:1px solid #666666; height:10px; }
@@ -439,14 +444,17 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
         #tab-status.tab-content.clearfix table.striped tbody tr.last td p {color: black; text-align: center; margin-bottom: 0px;}
         #tab-status.tab-content.clearfix table.striped tbody tr.last td {font-size: 14.4px; line-height: 130%;}
         #tab-status.tab-content.clearfix table.striped tbody tr.first th {font-size: 14.4px; line-height: 130%;}
+
     </style>
 
 
-    <script type="text/javascript" src="inc/js/jquery.js"></script>                     <!-- JQUERY -->
+    <script type="text/javascript" src="inc/js/jquery.js"></script>
+    <script type="text/javascript" src="inc/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="inc/js/typeahead.js"></script>                  <!-- JQUERY -->
+    <script type="text/javascript" src="inc/js/bootstrap-tagsinput.js"></script>
     <!--<script type="text/javascript" src="inc/js/prettify.js"></script>    -->                 <!-- PRETTIFY -->
     <!--<script type="text/javascript" src="inc/js/kickstart.js"></script>   -->                  <!-- KICKSTART -->
     <script type="text/javascript" src="Chart.js"></script>                                 <!-- Chart.JS -->
-    <script type="text/javascript" src="inc/js/jquery-ui.js"></script>
     <script type="text/javascript" src="history.js"></script>                               <!-- client-side history-tab-->
 
     <script>
@@ -502,16 +510,11 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
             ?>
         </div>
         <div id="tab-history" class="tab-content" data-tab-index="1">
-          <!--<ul id="sortable">
-              <li class="ui-state-default">
-                Item 1
-              </li>
-          </ul>-->
           <!-- HTML-structure of history-tab -->
           <ul id="sortable">
               <li class="ui-state-default">
                 <div id="property-selection">
-                  <p>property-selection</p>
+                <input id="propertyInput" type="text" data-role="tagsinput"/>
                 </div>
               </li>
               <li class="ui-state-default">
@@ -524,7 +527,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
                   <p>"date-range-selection"</p>
                 </div>
               </li>
-              <!-- (additional) property-history-graphs added here -->
+              <!-- property-history-graphs are to be added here (programmatically) -->
           </ul>
         </div>
     </div>
