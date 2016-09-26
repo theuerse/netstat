@@ -51,17 +51,37 @@ function setupSortableDivs(){
 }
 
 function setupPropertySelection(){
+  var citynames = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  prefetch: {
+    url: 'propertynames.json',
+    filter: function(list) {
+      return $.map(list, function(cityname) {
+        return { name: cityname }; });
+    }
+  }
+});
+citynames.initialize();
 
-  var propertynames = new Bloodhound({
+$('#propertyInput').tagsinput({
+  typeaheadjs: {
+    name: 'propertynames',
+    displayKey: 'name',
+    valueKey: 'name',
+    source: citynames.ttAdapter()
+  }
+});
+
+    /*var propertyObjects=[];
+    properties.forEach(function(property) {
+      propertyObjects.push({name: property});
+    });
+
+    var propertynames = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
-    prefetch: {
-      url: 'propertynames.json',
-      filter: function(list) {
-        return $.map(list, function(propertyname) {
-          return { name: propertyname }; });
-        }
-      }
+    local: propertyObjects
     });
     propertynames.initialize();
 
@@ -72,7 +92,7 @@ function setupPropertySelection(){
         valueKey: 'name',
         source: propertynames.ttAdapter()
       }
-    });
+    });*/
 
     $('#propertyInput').on('itemAdded', function(event) {
       if($("#p_" + event.item).length){

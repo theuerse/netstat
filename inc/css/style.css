@@ -93,6 +93,6 @@ ul {
   background-color: #428bca;
 }
 
-#propertyBtn {float: right; font-size:0.8em;}
+#propertyBtn {float: right; min-height: 100%; margin: 0px; vertical-align: middle;}
 #propertyInput {width: 100%;}
-li.ui-state-default div {overflow: hidden; height: 100%;}
+li.ui-state-default div {overflow: hidden;}
