@@ -23,27 +23,15 @@ Following is the LICENSE-note of the program that served as base for this one:
 */
 
 // <CONFIGURATION>
+$maxNumberOfHistoryEntries = 5;
+
 $hostlist=array(  // jsonFilename => sourceUrl
-    'PI0.json' => '192.168.0.10',
-    'PI1.json' => '192.168.0.11',
-    'PI2.json' => '192.168.0.12',
-    'PI3.json' => '192.168.0.13',
-    'PI4.json' => '192.168.0.14',
-    'PI5.json' => '192.168.0.15',
-    'PI6.json' => '192.168.0.16',
-    'PI7.json' => '192.168.0.17',
-    'PI8.json' => '192.168.0.18',
-    'PI9.json' => '192.168.0.19',
-    'PI10.json' => '192.168.0.20',
-    'PI11.json' => '192.168.0.21',
-    'PI12.json' => '192.168.0.22',
-    'PI13.json' => '192.168.0.23',
-    'PI14.json' => '192.168.0.24',
-    'PI15.json' => '192.168.0.25',
-    'PI16.json' => '192.168.0.26',
-    'PI17.json' => '192.168.0.27',
-    'PI18.json' => '192.168.0.28',
-    'PI19.json' => '192.168.0.29'
+    'PI0.json' => '127.0.0.1',
+    'PI1.json' => '127.0.0.1',
+    'PI2.json' => '127.0.0.1',
+    'PI3.json' => '127.0.0.1',
+    'PI4.json' => '127.0.0.1',
+    'PI5.json' => '127.0.0.1'
 );
 
 // path to a JSON-file on respective hosts
@@ -163,20 +151,29 @@ function downloadRemoteFile($hostIP,$newFilename){
     }
 
     file_put_contents($newFilename, $local_file);
+    return $local_file;
 }
 
 // Add the file with given $jsonFilename to the history-folder
-function addToHistory($jsonFilename) {
-    $DATETIME=date('U');
+function addToHistory($jsonFilename, $json) {
+    $new_entry = json_decode($json,true);
+
     if(!is_dir("history")){
         mkdir("history") or die("Cannot create history folder. Create it manually and make sure the webserver can write to it.");
     }
 
-    $local_file=file_get_contents($jsonFilename);
-    if(empty($local_file)) return; // do not add empty files to history
+    $history_file=file_get_contents("history/$jsonFilename");
+    if(empty($history_file)){
+      $history_file=json_encode(array('history' => [$new_entry]));
+    }else{
+      $history = json_decode($history_file,true);
+      array_push($history["history"], $new_entry);
+      $history["history"] = array_slice($history["history"], -$maxNumberOfHistoryEntries);
+      $history_file=json_encode($history);
+    }
 
     // file_put_contents returns false in case of an exception (else the number of written Bytes)
-    if (file_put_contents("history/${jsonFilename}.${DATETIME}", $local_file) === false) {
+    if (file_put_contents("history/${jsonFilename}", $history_file) === false) {
         exit("File $jsonFilename could not be saved in history. Please check directory permissions on directory \'history\'.");
     }
 }
@@ -412,8 +409,8 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
     // for every json-file of a Pi we care about
     global $hostlist;
     foreach ($hostlist as $jsonFilename => $hostIP) {
-      downloadRemoteFile($hostIP, $jsonFilename); // get the current json-file
-      addToHistory($jsonFilename); // add the downloaded file to the history
+      $json = downloadRemoteFile($hostIP, $jsonFilename); // get the current json-file
+      addToHistory($jsonFilename, $json); // add the downloaded file to the history
       echo "History for: ". $jsonFilename . " saved. <br />\n" ;
     }
     exit("History done.<br /> \n"); // end the script at this point
@@ -448,103 +445,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
     <script type="text/javascript" src="inc/js/prettify.js"></script>                       <!-- PRETTIFY -->
     <script type="text/javascript" src="inc/js/kickstart.js"></script>                      <!-- KICKSTART -->
     <script type="text/javascript" src="Chart.js"></script>                                 <!-- Chart.JS -->
-
-    <script type="text/javascript">
-      var graphInformation = {}; // caches graph info before drawing
-      var charts = {}; // holds references to drawn charts
-
-      // define global options for all history-graphs
-      var graphOptions = {
-          // avoid partial cutoff of leading digits of y-axis
-          scaleLabel : function(object) {return " " + object.value;},
-
-          animation: false, // disabling animation to improve performance and be more consistent with show/hide
-
-          scaleShowGridLines : true, //Boolean - Whether grid lines are shown across the chart
-
-          scaleGridLineColor : 'rgba(0,0,0,.05)', //String - Colour of the grid lines
-
-          scaleGridLineWidth : 1, //Number - Width of the grid lines
-
-          scaleBeginAtZero: true, // Set the start value
-
-          scaleShowHorizontalLines: true, //Boolean - Whether to show horizontal lines (except X axis)
-
-          scaleShowVerticalLines: true, //Boolean - Whether to show vertical lines (except Y axis)
-
-          bezierCurve : false, //Boolean - Whether the line is curved between points
-
-          bezierCurveTension : 0.4, //Number - Tension of the bezier curve between points
-
-          pointDot : true, //Boolean - Whether to show a dot for each point
-
-          pointDotRadius : 4,
-
-          pointDotStrokeWidth : 1, //Number - Pixel width of point dot stroke
-
-          //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-          pointHitDetectionRadius : 5,
-
-          datasetStroke : true, //Boolean - Whether to show a stroke for datasets
-
-          datasetStrokeWidth : 2, //Number - Pixel width of dataset stroke
-
-          datasetFill : true, //Boolean - Whether to fill the dataset with a colour
-
-          tooltipTemplate: "<%if (label){%><%=label%> => <%}%><%= value %>"
-      };
-
-
-      $(document).ready(function() {
-          var showText="Show";
-          var hideText="Hide";
-          $(".toggle").prev().append(' (<a href="#" class="toggleLink">'+showText+'</a>)');
-          $('.toggle').hide();
-          $('a.toggleLink').click(function() {
-              $(this).parent().next('.toggle').toggle('slow');
-              if ($(this).html()==showText) {
-                 $(this).html(hideText); // change text of link from 'Show' to 'Hide'
-
-                 // draw chart in canvas (once)
-                 $(this).parent().next('.toggle').children('canvas').each(function(index,value){
-                   if(graphInformation[value.id] !== undefined){
-                     // show item for creation
-                     $('#'+value.id).show();
-
-                     // draw graph in/on pre-existing canvas
-                     var context = document.getElementById(value.id).getContext('2d');
-                     charts[value.id] = new Chart(context).Line(graphInformation[value.id],graphOptions);
-
-                     // get rid of cached information => chart is created only once
-                     delete graphInformation[value.id];
-
-                     // hide graph if necessary
-                     var attributeClass = $('#'+value.id).attr('class');
-                     if(!$('#'+attributeClass+'Checkbox').is(':checked')){
-                       $('#'+value.id).hide();
-                     }
-                   }
-                 });
-              }
-              else {
-                 $(this).html(showText); // change text of link from 'Hide' to 'Show'
-              }
-              return false;
-          });
-
-	  // set up eventhandlers for attribute-checkboxes
-	 var attributes = ['voltageAtr','currentAtr','cputempAtr','pmutempAtr','hddtempAtr'];
-         attributes.forEach(function(attribute) {
-	   $('#'+attribute+'Checkbox').change(function(checkbox){
-	     if(checkbox.currentTarget.checked){
-               $('.'+checkbox.currentTarget.value).show();
-             }else {
-               $('.'+checkbox.currentTarget.value).hide();
-             }
-           });
-	 });
-      });
-    </script>
+    <script type="text/javascript" src="history.js"></script>                               <!-- client-side history-tab-->
 </head>
 
 <body>
@@ -585,7 +486,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
         </div>
         <div id="tabc2" class="tab-content">
             <?php
-                readHistoryFiles(); // read all available history files
+  /*              readHistoryFiles(); // read all available history files
                 $pi_index = 0;
 
 		// Draw checkboxes to show/hide pi-attributes
@@ -618,7 +519,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
                   genGraphInformation($pi_index, "hddtemp", $datasets);
                   $pi_index++;
                   echo "</div>";
-                }
+                }*/
             ?>
         </div>
     </div>
