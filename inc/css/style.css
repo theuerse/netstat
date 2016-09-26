@@ -92,3 +92,7 @@ ul {
   outline: 0;
   background-color: #428bca;
 }
+
+#propertyBtn {float: right; font-size:0.8em;}
+#propertyInput {width: 100%;}
+li.ui-state-default div {overflow: hidden; height: 100%;}

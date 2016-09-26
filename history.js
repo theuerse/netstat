@@ -1,5 +1,5 @@
-var targets = ["current", "voltage", "cputemp", "hddtemp", "pmutemp", "cpu0freq",
-"cpu1freq","txbytes","rxbytes","Free RAM","Uptime","Users logged on","Load"];
+var properties = ["current", "voltage", "cputemp", "hddtemp", "pmutemp", "cpu0freq",
+"cpu1freq","txbytes","rxbytes","Free_RAM","Uptime","Users_logged_on","Load"];
 
 var graphInformation = {}; // caches graph info before drawing
 var charts = {}; // holds references to drawn charts
@@ -65,17 +65,16 @@ function setupPropertySelection(){
     });
     propertynames.initialize();
 
-    $("input").tagsinput({
+    $("#propertyInput").tagsinput({
       typeaheadjs: {
         name: 'propertynames',
         displayKey: 'name',
         valueKey: 'name',
         source: propertynames.ttAdapter()
-      },
-      freeInput: true
+      }
     });
 
-    $('input').on('itemAdded', function(event) {
+    $('#propertyInput').on('itemAdded', function(event) {
       if($("#p_" + event.item).length){
         $("#p_" + event.item).show();
         console.log(event.item + " shown");
@@ -84,16 +83,57 @@ function setupPropertySelection(){
         $("#sortable").append('<li id="p_' + event.item +'" class="ui-state-default">' +
         '<div><p>' +  event.item + '</p></div></li>');
         setupSortableDivs();
+        $("#chk_" + event.item).prop('checked', true);
+        $("#chk_" + event.item).button( "refresh" );
         console.log(event.item + " added");
       }
 
     });
 
-    $('input').on('itemRemoved', function(event) {
+    $('#propertyInput').on('itemRemoved', function(event) {
       if($("#p_" + event.item).length){
         $("#p_" + event.item).hide();
+        $("#chk_" + event.item).prop('checked', false);
+        $("#chk_" + event.item).button( "refresh" );
         console.log(event.item + " removed");
       }
+    });
+
+
+    $("#propertyBtn").button().on( "click", function() {
+
+      // update property-state
+
+      $('.myCheckbox').prop('checked', true);
+
+      propertyDialog.dialog( "open" );
+    });
+
+  }
+
+  function setupPropertyDialog(){
+    properties.forEach(function(property) {
+      $("#dialog-properties form fieldset").append('<label for="chk_' + property +'">' + property +'</label>');
+      $("#dialog-properties form fieldset").append('<input class="chkbox" id="chk_' + property +'" type="checkbox"' +
+      'value="' + property +'">');
+    });
+
+    $( ".chkbox" ).checkboxradio();
+
+    $(".chkbox").bind('change', function(){
+      if($(this).is(':checked')){
+        $("#propertyInput").tagsinput('add', $(this).attr('value'));
+      }else{
+        $("#propertyInput").tagsinput('remove', $(this).attr('value'));
+      }
+    });
+
+    propertyDialog = $( "#dialog-properties" ).dialog({
+      autoOpen: false,
+      resizable: true,
+      modal: false,
+      height: 'auto',
+      width:'500px'
     });
   }
 
@@ -101,7 +141,10 @@ function setupPropertySelection(){
   $(document).ready(function() {
     setupSortableDivs();
 
+    setupPropertyDialog();
     setupPropertySelection();
+
+
     //alert("hello world");
     /*var showText="Show";
     var hideText="Hide";
