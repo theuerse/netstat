@@ -18,3 +18,8 @@ strong {
   margin:30px auto 30px auto;
   border:1px solid #ccc;
 }
+
+ul {
+  padding: 0;
+  list-style-type: none;
+}

@@ -47,6 +47,9 @@ var graphOptions = {
 
 
 $(document).ready(function() {
+  $( "#sortable" ).sortable();
+  $( "#sortable" ).disableSelection();
+  console.log("setup sortable");
   //alert("hello world");
   /*var showText="Show";
   var hideText="Hide";

@@ -427,35 +427,52 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 
     <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
-    <link rel="stylesheet" type="text/css" href="inc/css/kickstart.css" media="all" />      <!-- KICKSTART -->
-    <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />          <!-- CUSTOM STYLES -->
+    <!--<link rel="stylesheet" type="text/css" href="inc/css/kickstart.css" media="all" /> -->     <!-- KICKSTART -->
+    <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />       <!-- CUSTOM STYLES -->
+    <link rel="stylesheet" type="text/css" href="inc/css/jquery-ui.css" media="all" />
 
     <style type="text/css">
         .up {color: green;}
         .down {color: red;}
         .percentbar { background:#CCCCCC; border:1px solid #666666; height:10px; }
         .percentbar div { background: #28B8C0; height: 10px; }
-        #tabc1.tab-content.clearfix table.striped tbody tr.last td p {color: black; text-align: center; margin-bottom: 0px;}
-        #tabc1.tab-content.clearfix table.striped tbody tr.last td {font-size: 14.4px; line-height: 130%;}
-        #tabc1.tab-content.clearfix table.striped tbody tr.first th {font-size: 14.4px; line-height: 130%;}
+        #tab-status.tab-content.clearfix table.striped tbody tr.last td p {color: black; text-align: center; margin-bottom: 0px;}
+        #tab-status.tab-content.clearfix table.striped tbody tr.last td {font-size: 14.4px; line-height: 130%;}
+        #tab-status.tab-content.clearfix table.striped tbody tr.first th {font-size: 14.4px; line-height: 130%;}
     </style>
 
 
-    <script type="text/javascript" src="inc/js/jquery.min.js"></script>                     <!-- JQUERY -->
-    <script type="text/javascript" src="inc/js/prettify.js"></script>                       <!-- PRETTIFY -->
-    <script type="text/javascript" src="inc/js/kickstart.js"></script>                      <!-- KICKSTART -->
+    <script type="text/javascript" src="inc/js/jquery.js"></script>                     <!-- JQUERY -->
+    <!--<script type="text/javascript" src="inc/js/prettify.js"></script>    -->                 <!-- PRETTIFY -->
+    <!--<script type="text/javascript" src="inc/js/kickstart.js"></script>   -->                  <!-- KICKSTART -->
     <script type="text/javascript" src="Chart.js"></script>                                 <!-- Chart.JS -->
+    <script type="text/javascript" src="inc/js/jquery-ui.js"></script>
     <script type="text/javascript" src="history.js"></script>                               <!-- client-side history-tab-->
+
+    <script>
+      $( function() {
+        $( "#tabs" ).tabs(
+          {
+            // remember last selected Tab
+            active: localStorage.getItem("currentTabIndex"),
+            activate: function(event, ui) {
+              localStorage.setItem("currentTabIndex", ui.newPanel[0].dataset["tabIndex"]);
+            }
+          });
+
+        window.scrollTo(0,0); // scroll to top
+      } );
+    </script>
 </head>
 
 <body>
     <a id="top-of-page"></a><div id="wrap" class="clearfix">
-    <div class="col_12">
-        <ul class="tabs left">
-            <li><a href="#tabc1">Overview</a></li>
-            <li><a href="#tabc2">History</a></li>
+    <div id="tabs">
+        <ul>
+            <li><a href="#tab-status">Overview</a></li>
+            <li><a href="#tab-history">History</a></li>
         </ul>
-        <div id="tabc1" class="tab-content">
+        <div id="tab-status" class="tab-content" data-tab-index="0">
             <?php
               echo "<i>Ping monitor:</i>";
               foreach ($hostlist as $key => $hostIP) {
@@ -484,43 +501,31 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
               }
             ?>
         </div>
-        <div id="tabc2" class="tab-content">
-            <?php
-  /*              readHistoryFiles(); // read all available history files
-                $pi_index = 0;
-
-		// Draw checkboxes to show/hide pi-attributes
-		echo '<input id="voltageAtrCheckbox" type="checkbox" value="voltageAtr" checked="checked">voltage &nbsp;';
-		echo '<input id="currentAtrCheckbox" type="checkbox" value="currentAtr" checked="checked">current &nbsp;';
-		echo '<input id="cputempAtrCheckbox" type="checkbox" value="cputempAtr" checked="checked">cputemp &nbsp;';
-		echo '<input id="pmutempAtrCheckbox" type="checkbox" value="pmutempAtr" checked="checked">pmutemp &nbsp;';
-      		echo '<input id="hddtempAtrCheckbox" type="checkbox" value="hddtempAtr" checked="checked">hddtemp';
-
-                // Draw a graph displaying the change of some attributes over time
-                // for EVERY single PI
-                foreach ($hostlist as $jsonFilename => $hostIP) {
-                  $sourceUrl = getJsonUrl($jsonFilename);
-                  $host=parse_url($sourceUrl,PHP_URL_HOST);
-                  echo "<p>History for host ${host}</p>\n";
-                  echo "<div class=\"toggle\">";
-
-                  // garther all available information (history) on the Pis via its $jsonFilename
-                  $datasets = getHistoryDatasets($jsonFilename);
-
-                  // process the necessary information, add a HTML-canvas for each Information-type
-                  genGraphInformation($pi_index, "voltage", $datasets);
-
-                  genGraphInformation($pi_index, "current", $datasets);
-
-                  genGraphInformation($pi_index, "cputemp", $datasets);
-
-                  genGraphInformation($pi_index, "pmutemp", $datasets);
-
-                  genGraphInformation($pi_index, "hddtemp", $datasets);
-                  $pi_index++;
-                  echo "</div>";
-                }*/
-            ?>
+        <div id="tab-history" class="tab-content" data-tab-index="1">
+          <!--<ul id="sortable">
+              <li class="ui-state-default">
+                Item 1
+              </li>
+          </ul>-->
+          <!-- HTML-structure of history-tab -->
+          <ul id="sortable">
+              <li class="ui-state-default">
+                <div id="property-selection">
+                  <p>property-selection</p>
+                </div>
+              </li>
+              <li class="ui-state-default">
+                <div id="pi-selection">
+                  <p>pi-selection</p>
+                </div>
+              </li>
+              <li class="ui-state-default">
+                <div id="date-range-selection">
+                  <p>"date-range-selection"</p>
+                </div>
+              </li>
+              <!-- (additional) property-history-graphs added here -->
+          </ul>
         </div>
     </div>
 </body>
