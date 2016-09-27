@@ -97,7 +97,7 @@ function setupPropertySelection(){
         $("#chk_" + event.item).prop('checked', true);
         $("#chk_" + event.item).button( "refresh" );
         console.log(event.item + " added");
-        updateChart(event.item);
+        //updateChart(event.item);
       }
 
     });
@@ -182,6 +182,7 @@ function setupPropertySelection(){
           $.getJSON("history/" + event.item + ".json").done(function(json){
             jsonFiles[event.item] = json;
             integrateJsonData(event.item, json);
+            updateChart("current");
           })
           .fail(function( jqxhr, textStatus, error ) {
             var err = textStatus + ", " + error;
@@ -233,6 +234,7 @@ function setupPropertySelection(){
     }
 
     function updateChart(propertyName){
+      console.log("updating chart");
       columns = [['x'].concat(jsonData.x)];
 
       $("#host-selection input[type='text']").eq(2).tagsinput('items').forEach(function(hostname){
@@ -282,10 +284,9 @@ function setupPropertySelection(){
           jsonData[hostname][name].push(histEntry[name]);
         });
       });
-
-      console.log(jsonData);
     }
 
+    // TODO: normalize values
 
     $(document).ready(function() {
       setupSortableDivs();
