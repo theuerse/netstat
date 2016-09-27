@@ -5,6 +5,7 @@ var hosts = ["PI0","PI1","PI2","PI3","PI4","PI5","PI6","PI7","PI8","PI9","PI10",
 "PI12","PI13","PI14","PI15","PI16","PI17","PI18","PI19"];
 
 var jsonFiles = {};
+var jsonData = {"x":[]};
 
 var graphInformation = {}; // caches graph info before drawing
 var charts = {}; // holds references to drawn charts
@@ -91,11 +92,12 @@ function setupPropertySelection(){
       }
       else{
         $("#sortable").append('<li id="p_' + event.item +'" class="ui-state-default">' +
-        '<div><p>' +  event.item + '</p></div></li>');
+        '<div><p>' +  event.item + '</p><div id="chart_' + event.item +'"></div></div></li>');
         setupSortableDivs();
         $("#chk_" + event.item).prop('checked', true);
         $("#chk_" + event.item).button( "refresh" );
         console.log(event.item + " added");
+        updateChart(event.item);
       }
 
     });
@@ -174,24 +176,25 @@ function setupPropertySelection(){
       });
 
       $("#host-selection input[type='text']" ).eq(2).on('itemAdded', function(event) {
-          $("#chk_" + event.item).prop('checked', true);
-          $("#chk_" + event.item).button( "refresh" );
-          if(! jsonFiles.hasOwnProperty(event.item)){
-            $.getJSON("history/" + event.item + ".json").done(function(json){
-              jsonFiles[event.item] = json;
-            })
-            .fail(function( jqxhr, textStatus, error ) {
-              var err = textStatus + ", " + error;
-              console.log( "Request Failed: " + err );
-            });
-          }
-          console.log(event.item + " added");
+        $("#chk_" + event.item).prop('checked', true);
+        $("#chk_" + event.item).button( "refresh" );
+        if(! jsonFiles.hasOwnProperty(event.item)){
+          $.getJSON("history/" + event.item + ".json").done(function(json){
+            jsonFiles[event.item] = json;
+            integrateJsonData(event.item, json);
+          })
+          .fail(function( jqxhr, textStatus, error ) {
+            var err = textStatus + ", " + error;
+            console.log( "Request Failed: " + err );
+          });
+        }
+        console.log(event.item + " added");
       });
 
       $("#host-selection input[type='text']" ).eq(2).on('itemRemoved', function(event) {
-          $("#chk_" + event.item).prop('checked', false);
-          $("#chk_" + event.item).button( "refresh" );
-          console.log(event.item + " removed");
+        $("#chk_" + event.item).prop('checked', false);
+        $("#chk_" + event.item).button( "refresh" );
+        console.log(event.item + " removed");
       });
 
 
@@ -229,46 +232,102 @@ function setupPropertySelection(){
       });
     }
 
+    function updateChart(propertyName){
+      columns = [['x'].concat(jsonData.x)];
 
-  $(document).ready(function() {
-    setupSortableDivs();
+      $("#host-selection input[type='text']").eq(2).tagsinput('items').forEach(function(hostname){
+        console.log(hostname);
+        columns.push([hostname].concat(jsonData[hostname][propertyName]));
+      });
+      var chart = c3.generate({
+        bindto: '#chart_' + propertyName,
+        data: {
+          x: 'x',
+          xFormat: '%E %m %d %H:%M:%S %Z %Y',
+          //xFormat: '%EEE %m %d %H:%M:%S CEST %Y',
+          columns: columns
+        },
+        axis: {
+          x: {
+            type: 'timeseries',
+            // if true, treat x value as localtime (Default)
+            // if false, convert to UTC internally
+            //localtime: false,
+            tick: {
+              format: '%E %m %d %H:%M:%S %Z %Y'
+            }
+          }
+        }
+      });
+    }
 
-    setupPropertyDialog();
-    setupPropertySelection();
+    function integrateJsonData(hostname, json){
+      if(Object.keys(jsonData).length == 1){
+        // adding first PI
+        json.history.forEach(function(histEntry){
+          jsonData.x.push(histEntry.date);
+        });
+      }
 
-    setupHostDialog();
-    setupHostSelection();
+      if(!jsonData.hasOwnProperty(hostname)){
+        jsonData[hostname] = {};
+      }
+
+        properties.forEach(function(property) {
+        var name = property.replace("_"," ");
+
+        if(!jsonData.hasOwnProperty(name)){
+          jsonData[hostname][name] = [];
+        }
+
+        json.history.forEach(function(histEntry){
+          jsonData[hostname][name].push(histEntry[name]);
+        });
+      });
+
+      console.log(jsonData);
+    }
 
 
-    //alert("hello world");
-    /*var showText="Show";
-    var hideText="Hide";
-    $(".toggle").prev().append(' (<a href="#" class="toggleLink">'+showText+'</a>)');
-    $('.toggle').hide();
-    $('a.toggleLink').click(function() {
-    $(this).parent().next('.toggle').toggle('slow');
-    if ($(this).html()==showText) {
-    $(this).html(hideText); // change text of link from 'Show' to 'Hide'
+    $(document).ready(function() {
+      setupSortableDivs();
 
-    // draw chart in canvas (once)
-    $(this).parent().next('.toggle').children('canvas').each(function(index,value){
-    if(graphInformation[value.id] !== undefined){
-    // show item for creation
-    $('#'+value.id).show();
+      setupPropertyDialog();
+      setupPropertySelection();
 
-    // draw graph in/on pre-existing canvas
-    var context = document.getElementById(value.id).getContext('2d');
-    charts[value.id] = new Chart(context).Line(graphInformation[value.id],graphOptions);
+      setupHostDialog();
+      setupHostSelection();
 
-    // get rid of cached information => chart is created only once
-    delete graphInformation[value.id];
 
-    // hide graph if necessary
-    var attributeClass = $('#'+value.id).attr('class');
-    if(!$('#'+attributeClass+'Checkbox').is(':checked')){
-    $('#'+value.id).hide();
+      //alert("hello world");
+      /*var showText="Show";
+      var hideText="Hide";
+      $(".toggle").prev().append(' (<a href="#" class="toggleLink">'+showText+'</a>)');
+      $('.toggle').hide();
+      $('a.toggleLink').click(function() {
+      $(this).parent().next('.toggle').toggle('slow');
+      if ($(this).html()==showText) {
+      $(this).html(hideText); // change text of link from 'Show' to 'Hide'
+
+      // draw chart in canvas (once)
+      $(this).parent().next('.toggle').children('canvas').each(function(index,value){
+      if(graphInformation[value.id] !== undefined){
+      // show item for creation
+      $('#'+value.id).show();
+
+      // draw graph in/on pre-existing canvas
+      var context = document.getElementById(value.id).getContext('2d');
+      charts[value.id] = new Chart(context).Line(graphInformation[value.id],graphOptions);
+
+      // get rid of cached information => chart is created only once
+      delete graphInformation[value.id];
+
+      // hide graph if necessary
+      var attributeClass = $('#'+value.id).attr('class');
+      if(!$('#'+attributeClass+'Checkbox').is(':checked')){
+      $('#'+value.id).hide();
+    }
   }
-}
 });
 }
 else {

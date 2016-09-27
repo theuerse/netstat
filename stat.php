@@ -428,6 +428,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
   <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
   <!--<link rel="stylesheet" type="text/css" href="inc/css/kickstart.css" media="all" /> -->     <!-- KICKSTART -->
+  <link rel="stylesheet" type="text/css" href="inc/css/c3.css">
   <link rel="stylesheet" type="text/css" href="inc/css/github.css">
   <link rel="stylesheet" href="inc/font-awesome/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="inc/css/jquery-ui.css" media="all" />
@@ -449,6 +450,8 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
   </style>
 
 
+  <script type="text/javascript" src="inc/js/d3.js"></script>
+  <script type="text/javascript" src="inc/js/c3.js"></script>
   <script type="text/javascript" src="inc/js/jquery.js"></script>
   <script type="text/javascript" src="inc/js/jquery-ui.js"></script>
   <script type="text/javascript" src="inc/js/typeahead.js"></script>                  <!-- JQUERY -->
