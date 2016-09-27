@@ -52,47 +52,32 @@ function setupSortableDivs(){
 
 function setupPropertySelection(){
   var citynames = new Bloodhound({
-  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-  queryTokenizer: Bloodhound.tokenizers.whitespace,
-  prefetch: {
-    url: 'propertynames.json',
-    filter: function(list) {
-      return $.map(list, function(cityname) {
-        return { name: cityname }; });
-    }
-  }
-});
-citynames.initialize();
-
-$( "#property-selection input[type='text']" ).tagsinput({
-  typeaheadjs: {
-    name: 'propertynames',
-    displayKey: 'name',
-    valueKey: 'name',
-    source: citynames.ttAdapter()
-  }
-});
-
-    /*var propertyObjects=[];
-    properties.forEach(function(property) {
-      propertyObjects.push({name: property});
-    });
-
-    var propertynames = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
-    local: propertyObjects
+    prefetch: {
+      url: 'propertynames.json',
+      filter: function(list) {
+        return $.map(list, function(cityname) {
+          return { name: cityname }; });
+        }
+      }
     });
-    propertynames.initialize();
+    citynames.initialize();
 
-    $("#propertyInput").tagsinput({
+    $( "#property-selection input[type='text']" ).tagsinput({
       typeaheadjs: {
         name: 'propertynames',
         displayKey: 'name',
         valueKey: 'name',
-        source: propertynames.ttAdapter()
+        source: citynames.ttAdapter()
       }
-    });*/
+    });
+
+    $("#property-selection input[type='text']").on('beforeItemAdd', function(event) {
+      if(properties.indexOf(event.item) === -1){
+        event.cancel = true; // prevent item from being added, when it is not in the properties-array
+      }
+    });
 
     $("#property-selection input[type='text']" ).eq(2).on('itemAdded', function(event) {
       if($("#p_" + event.item).length){

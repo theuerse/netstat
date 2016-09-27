@@ -93,7 +93,5 @@ ul {
   background-color: #428bca;
 }
 
-
-.tagsBtn {float: left; display: inline; width: 75px; min-height: 100%; margin: 0px; vertical-align: middle;}
-.bootstrap-tagsinput {display: inline-block; width: calc(100% - 75px); height: 100%;}
-.bootstrap-tagsinput > .bootstrap-tagsinput {width: 100%;}
+td {background-color: white;}
+.tagsBtn {margin: 0px; width: 100%; height: 100%;}

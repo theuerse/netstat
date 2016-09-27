@@ -515,8 +515,12 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
           <ul id="sortable">
             <li class="ui-state-default">
               <div id="property-selection">
-                <button id="propertyBtn" class="tagsBtn"><i class="fa fa-cog" aria-hidden="true"></i></button>
-                <input type="text" data-role="tagsinput"/>
+                <table>
+                  <tr>
+                    <td><button id="propertyBtn" class="tagsBtn"><i class="fa fa-cog" aria-hidden="true"></i></button></td>
+                    <td>  <input type="text" data-role="tagsinput"/></td>
+                  </tr>
+                </table>
               </div>
             </li>
             <li class="ui-state-default">
