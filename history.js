@@ -4,6 +4,8 @@ var properties = ["current", "voltage", "cputemp", "hddtemp", "pmutemp", "cpu0fr
 var hosts = ["PI0","PI1","PI2","PI3","PI4","PI5","PI6","PI7","PI8","PI9","PI10","PI11",
 "PI12","PI13","PI14","PI15","PI16","PI17","PI18","PI19"];
 
+var jsonFiles = {};
+
 var graphInformation = {}; // caches graph info before drawing
 var charts = {}; // holds references to drawn charts
 
@@ -174,6 +176,15 @@ function setupPropertySelection(){
       $("#host-selection input[type='text']" ).eq(2).on('itemAdded', function(event) {
           $("#chk_" + event.item).prop('checked', true);
           $("#chk_" + event.item).button( "refresh" );
+          if(! jsonFiles.hasOwnProperty(event.item)){
+            $.getJSON("history/" + event.item + ".json").done(function(json){
+              jsonFiles[event.item] = json;
+            })
+            .fail(function( jqxhr, textStatus, error ) {
+              var err = textStatus + ", " + error;
+              console.log( "Request Failed: " + err );
+            });
+          }
           console.log(event.item + " added");
       });
 
