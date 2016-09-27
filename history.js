@@ -243,18 +243,15 @@ function setupPropertySelection(){
         bindto: '#chart_' + propertyName,
         data: {
           x: 'x',
-          xFormat: '%E %m %d %H:%M:%S %Z %Y',
-          //xFormat: '%EEE %m %d %H:%M:%S CEST %Y',
+          xFormat: '%a %b %d %H:%M:%S %Y',
           columns: columns
         },
         axis: {
           x: {
             type: 'timeseries',
-            // if true, treat x value as localtime (Default)
-            // if false, convert to UTC internally
-            //localtime: false,
             tick: {
-              format: '%E %m %d %H:%M:%S %Z %Y'
+              format: '%d.%m.%Y %H:%M:%S',
+              values: [jsonData.x[0], jsonData.x[jsonData.x.length-1]]
             }
           }
         }
@@ -265,7 +262,8 @@ function setupPropertySelection(){
       if(Object.keys(jsonData).length == 1){
         // adding first PI
         json.history.forEach(function(histEntry){
-          jsonData.x.push(histEntry.date);
+          //TODO: reliably filter out zone, or find appropriate format-string!
+          jsonData.x.push(histEntry.date.replace("CEST ",""));
         });
       }
 
