@@ -1,6 +1,9 @@
 var properties = ["current", "voltage", "cputemp", "hddtemp", "pmutemp", "cpu0freq",
 "cpu1freq","txbytes","rxbytes","Free_RAM","Uptime","Users_logged_on","Load"];
 
+var hosts = ["PI0","PI1","PI2","PI3","PI4","PI5","PI6","PI7","PI8","PI9","PI10","PI11",
+"PI12","PI13","PI14","PI15","PI16","PI17","PI18","PI19"];
+
 var graphInformation = {}; // caches graph info before drawing
 var charts = {}; // holds references to drawn charts
 
@@ -118,9 +121,9 @@ function setupPropertySelection(){
       'value="' + property +'">');
     });
 
-    $( ".chkbox" ).checkboxradio();
+    $( "#dialog-properties .chkbox" ).checkboxradio();
 
-    $(".chkbox").bind('change', function(){
+    $("#dialog-properties .chkbox").bind('change', function(){
       if($(this).is(':checked')){
         $("#property-selection input[type='text']").eq(2).tagsinput('add', $(this).attr('value'),{preventPost: true});
         console.log("adding tag" + $(this).attr('value'));
@@ -139,12 +142,91 @@ function setupPropertySelection(){
     });
   }
 
+  function setupHostSelection(){
+    var hostnames = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      prefetch: {
+        url: 'hostnames.json',
+        filter: function(list) {
+          return $.map(list, function(hostname) {
+            return { name: hostname }; });
+          }
+        }
+      });
+      hostnames.initialize();
+
+      $( "#host-selection input[type='text']" ).tagsinput({
+        typeaheadjs: {
+          name: 'hostnames',
+          displayKey: 'name',
+          valueKey: 'name',
+          source: hostnames.ttAdapter()
+        }
+      });
+
+      $("#host-selection input[type='text']").on('beforeItemAdd', function(event) {
+        if(hosts.indexOf(event.item) === -1){
+          event.cancel = true; // prevent item from being added, when it is not in the hosts-array
+        }
+      });
+
+      $("#host-selection input[type='text']" ).eq(2).on('itemAdded', function(event) {
+          $("#chk_" + event.item).prop('checked', true);
+          $("#chk_" + event.item).button( "refresh" );
+          console.log(event.item + " added");
+      });
+
+      $("#host-selection input[type='text']" ).eq(2).on('itemRemoved', function(event) {
+          $("#chk_" + event.item).prop('checked', false);
+          $("#chk_" + event.item).button( "refresh" );
+          console.log(event.item + " removed");
+      });
+
+
+      $("#hostBtn").button().on( "click", function() {
+        hostDialog.dialog( "open" );
+      });
+
+    }
+
+    function setupHostDialog(){
+      hosts.forEach(function(host) {
+        $("#dialog-host form fieldset").append('<label for="chk_' + host +'">' + host +'</label>');
+        $("#dialog-host form fieldset").append('<input class="chkbox" id="chk_' + host +'" type="checkbox"' +
+        'value="' + host +'">');
+      });
+
+      $( "#dialog-host .chkbox" ).checkboxradio();
+
+      $("#dialog-host .chkbox").bind('change', function(){
+        if($(this).is(':checked')){
+          $("#host-selection input[type='text']").eq(2).tagsinput('add', $(this).attr('value'),{preventPost: true});
+          console.log("adding tag" + $(this).attr('value'));
+        }else{
+
+          $("#host-selection input[type='text']").eq(2).tagsinput('remove', $(this).attr('value'));
+        }
+      });
+
+      hostDialog = $( "#dialog-host" ).dialog({
+        autoOpen: false,
+        resizable: true,
+        modal: false,
+        height: 'auto',
+        width:'500px'
+      });
+    }
+
 
   $(document).ready(function() {
     setupSortableDivs();
 
     setupPropertyDialog();
     setupPropertySelection();
+
+    setupHostDialog();
+    setupHostSelection();
 
 
     //alert("hello world");

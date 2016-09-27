@@ -518,14 +518,19 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
                 <table>
                   <tr>
                     <td><button id="propertyBtn" class="tagsBtn"><i class="fa fa-cog" aria-hidden="true"></i></button></td>
-                    <td>  <input type="text" data-role="tagsinput"/></td>
+                    <td><input type="text" data-role="tagsinput"/></td>
                   </tr>
                 </table>
               </div>
             </li>
             <li class="ui-state-default">
-              <div id="pi-selection">
-                <p>pi-selection</p>
+              <div id="host-selection">
+                <table>
+                  <tr>
+                    <td><button id="hostBtn" class="tagsBtn"><i class="fa fa-cog" aria-hidden="true"></i></button></td>
+                    <td><input type="text" data-role="tagsinput"/></td>
+                  </tr>
+                </table>
               </div>
             </li>
             <li class="ui-state-default">
@@ -534,6 +539,11 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
               </div>
             </li>
             <div id="dialog-properties" title="Displayed properties:">
+              <form>
+                <fieldset></fieldset>
+              </form>
+            </div>
+            <div id="dialog-host" title="Displayed hosts:">
               <form>
                 <fieldset></fieldset>
               </form>
