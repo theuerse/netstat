@@ -514,9 +514,9 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
           <!-- HTML-structure of history-tab -->
           <ul id="sortable">
             <li class="ui-state-default">
-              <button id="propertyBtn"><i class="fa fa-cog" aria-hidden="true"></i></button>
               <div id="property-selection">
-                <input id="propertyInput" type="text" data-role="tagsinput"/>
+                <button id="propertyBtn" class="tagsBtn"><i class="fa fa-cog" aria-hidden="true"></i></button>
+                <input type="text" data-role="tagsinput"/>
               </div>
             </li>
             <li class="ui-state-default">

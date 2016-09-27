@@ -64,7 +64,7 @@ function setupPropertySelection(){
 });
 citynames.initialize();
 
-$('#propertyInput').tagsinput({
+$( "#property-selection input[type='text']" ).tagsinput({
   typeaheadjs: {
     name: 'propertynames',
     displayKey: 'name',
@@ -94,7 +94,7 @@ $('#propertyInput').tagsinput({
       }
     });*/
 
-    $('#propertyInput').on('itemAdded', function(event) {
+    $("#property-selection input[type='text']" ).eq(2).on('itemAdded', function(event) {
       if($("#p_" + event.item).length){
         $("#p_" + event.item).show();
         console.log(event.item + " shown");
@@ -110,7 +110,7 @@ $('#propertyInput').tagsinput({
 
     });
 
-    $('#propertyInput').on('itemRemoved', function(event) {
+    $("#property-selection input[type='text']" ).eq(2).on('itemRemoved', function(event) {
       if($("#p_" + event.item).length){
         $("#p_" + event.item).hide();
         $("#chk_" + event.item).prop('checked', false);
@@ -121,11 +121,6 @@ $('#propertyInput').tagsinput({
 
 
     $("#propertyBtn").button().on( "click", function() {
-
-      // update property-state
-
-      $('.myCheckbox').prop('checked', true);
-
       propertyDialog.dialog( "open" );
     });
 
@@ -142,9 +137,11 @@ $('#propertyInput').tagsinput({
 
     $(".chkbox").bind('change', function(){
       if($(this).is(':checked')){
-        $("#propertyInput").tagsinput('add', $(this).attr('value'));
+        $("#property-selection input[type='text']").eq(2).tagsinput('add', $(this).attr('value'),{preventPost: true});
+        console.log("adding tag" + $(this).attr('value'));
       }else{
-        $("#propertyInput").tagsinput('remove', $(this).attr('value'));
+
+        $("#property-selection input[type='text']").eq(2).tagsinput('remove', $(this).attr('value'));
       }
     });
 

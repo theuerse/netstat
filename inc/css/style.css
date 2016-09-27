@@ -93,6 +93,7 @@ ul {
   background-color: #428bca;
 }
 
-#propertyBtn {float: right; min-height: 100%; margin: 0px; vertical-align: middle;}
-#propertyInput {width: 100%;}
-li.ui-state-default div {overflow: hidden;}
+
+.tagsBtn {float: left; display: inline; width: 75px; min-height: 100%; margin: 0px; vertical-align: middle;}
+.bootstrap-tagsinput {display: inline-block; width: calc(100% - 75px); height: 100%;}
+.bootstrap-tagsinput > .bootstrap-tagsinput {width: 100%;}
