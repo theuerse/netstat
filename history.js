@@ -261,6 +261,15 @@ function setupPropertySelection(){
           xFormat: '%a %b %d %H:%M:%S %Y',
           columns: columns
         },
+        point: {
+          show: false
+        },
+        transition: {
+          duration: 0
+        },
+        interaction: {
+          enabled: false
+        },
         axis: {
           x: {
             type: 'timeseries',
