@@ -8,7 +8,8 @@ var units = {"current": "[A]", "voltage": "[V]", "cputemp": "[°C]", "hddtemp" :
 "pmutemp": "[°C]", "cpu0freq": "[MHz]","cpu1freq": "[MHz]","txbytes": "MB","rxbytes": "MB","Free_RAM": "MB","Uptime":"","Users_logged_on":"","Load":"[%]" };
 
 var defaultValues = {
-  hosts: ["PI0","PI1","PI2"],
+  hosts: ["PI0","PI1","PI2","PI3","PI4","PI5","PI6","PI7","PI8","PI9","PI10","PI11",
+  "PI12","PI13","PI14","PI15","PI16","PI17","PI18","PI19"],
   properties: ["voltage", "current", "cputemp", "pmutemp", "hddtemp"]
 };
 
@@ -356,19 +357,27 @@ function setupPropertySelection(){
 
       if(!jsonData.hasOwnProperty(hostname)){
         jsonData[hostname] = {};
+        properties.forEach(function(property){
+          jsonData[hostname][property.split("_").join(" ")] = [];
+        });
       }
 
-      properties.forEach(function(property) {
-        var name = property.replace("_"," ");
-
-        if(!jsonData.hasOwnProperty(name)){
-          jsonData[hostname][name] = [];
-        }
-
         json.history.forEach(function(histEntry){
-          jsonData[hostname][name].push(conformJsonValue(name, histEntry[name]));
+          jsonData[hostname].voltage.push(histEntry.voltage / 1000000);
+          jsonData[hostname].current.push(histEntry.current / 1000000);
+          jsonData[hostname].cpu0freq.push(histEntry.cpu0freq / 1000);
+          jsonData[hostname].cpu1freq.push(histEntry.cpu1freq / 1000);
+          jsonData[hostname].cputemp.push(histEntry.cputemp.replace("°C",""));
+          jsonData[hostname].pmutemp.push(histEntry.pmutemp.replace("°C",""));
+          jsonData[hostname].txbytes.push(histEntry.txbytes / 1000000);
+          jsonData[hostname].rxbytes.push(histEntry.rxbytes / 1000000);
+
+          jsonData[hostname].hddtemp.push(histEntry.hddtemp);
+          jsonData[hostname]["Free RAM"].push(histEntry["Free RAM"]);
+          jsonData[hostname].Uptime.push(histEntry.Uptime);
+          jsonData[hostname]["Users logged on"].push(histEntry["Users logged on"]);
+          jsonData[hostname].Load.push(histEntry.Load);
         });
-      });
       console.log(hostname + " integrated");
     }
 
@@ -385,7 +394,7 @@ function setupPropertySelection(){
             $("#property-selection input[type='text']").eq(2).tagsinput('add', property);
           });
         }    // TODO: periodically check or somewhat wait for all default-hosts
-      }, 200);
+      }, 500);
 
     }
 
