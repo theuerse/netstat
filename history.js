@@ -6,6 +6,7 @@ var hosts = ["PI0","PI1","PI2","PI3","PI4","PI5","PI6","PI7","PI8","PI9","PI10",
 
 var jsonFiles = {};
 var jsonData = {"x":[]};
+var charts = {};
 
 var graphInformation = {}; // caches graph info before drawing
 var charts = {}; // holds references to drawn charts
@@ -80,24 +81,30 @@ function setupPropertySelection(){
     });
 
     $("#property-selection input[type='text']").on('beforeItemAdd', function(event) {
-      if(properties.indexOf(event.item) === -1){
+      var propertyName = event.item;
+      if(properties.indexOf(propertyName) === -1){
         event.cancel = true; // prevent item from being added, when it is not in the properties-array
       }
     });
 
     $("#property-selection input[type='text']" ).eq(2).on('itemAdded', function(event) {
-      if($("#p_" + event.item).length){
-        $("#p_" + event.item).show();
-        console.log(event.item + " shown");
+      var propertyName = event.item;
+      if($("#p_" + propertyName).length){
+        $("#p_" + propertyName).show();
+        console.log(propertyName + " shown");
       }
       else{
-        $("#sortable").append('<li id="p_' + event.item +'" class="ui-state-default">' +
-        '<div><p>' +  event.item + '</p><div id="chart_' + event.item +'"></div></div></li>');
+        $("#sortable").append('<li id="p_' + propertyName +'" class="ui-state-default">' +
+        '<div><p>' +  propertyName + '</p><div id="chart_' + propertyName +'"></div></div></li>');
+
         setupSortableDivs();
-        $("#chk_" + event.item).prop('checked', true);
-        $("#chk_" + event.item).button( "refresh" );
-        console.log(event.item + " added");
-        //updateChart(event.item);
+
+        $("#chk_" + propertyName).prop('checked', true);
+        $("#chk_" + propertyName).button( "refresh" );
+
+        setupChart(propertyName);
+
+        console.log(propertyName + " added");
       }
 
     });
@@ -176,26 +183,43 @@ function setupPropertySelection(){
       });
 
       $("#host-selection input[type='text']" ).eq(2).on('itemAdded', function(event) {
-        $("#chk_" + event.item).prop('checked', true);
-        $("#chk_" + event.item).button( "refresh" );
-        if(! jsonFiles.hasOwnProperty(event.item)){
-          $.getJSON("history/" + event.item + ".json").done(function(json){
-            jsonFiles[event.item] = json;
-            integrateJsonData(event.item, json);
-            updateChart("current");
+        var hostname = event.item;
+        $("#chk_" + hostname).prop('checked', true);
+        $("#chk_" + hostname).button( "refresh" );
+        if(! jsonFiles.hasOwnProperty(hostname)){
+          $.getJSON("history/" + hostname + ".json").done(function(json){
+            jsonFiles[hostname] = json;
+            integrateJsonData(hostname, json);
+
+            // update existing charts (wait for data)
+            for(var propertyName in charts) {
+              charts[propertyName].load({columns:[[hostname].concat(jsonData[hostname][propertyName])]});
+            }
           })
           .fail(function( jqxhr, textStatus, error ) {
             var err = textStatus + ", " + error;
             console.log( "Request Failed: " + err );
           });
+        }else{
+          // immediately update existing charts (data is there)
+          for(var propertyName in charts) {
+              charts[propertyName].show([hostname],{withLegend: true});
+          }
         }
-        console.log(event.item + " added");
+        console.log(hostname + " added");
       });
 
       $("#host-selection input[type='text']" ).eq(2).on('itemRemoved', function(event) {
-        $("#chk_" + event.item).prop('checked', false);
-        $("#chk_" + event.item).button( "refresh" );
-        console.log(event.item + " removed");
+        var hostname = event.item;
+        $("#chk_" + hostname).prop('checked', false);
+        $("#chk_" + hostname).button( "refresh" );
+
+        // update existing charts
+        for(var propertyName in charts) {
+          //charts[propertyName].unload({ids: [hostname]});
+            charts[propertyName].hide([hostname],{withLegend: true});
+        }
+        console.log(hostname + " removed");
       });
 
 
@@ -233,15 +257,15 @@ function setupPropertySelection(){
       });
     }
 
-    function updateChart(propertyName){
+    function setupChart(propertyName){
       console.log("updating chart");
       columns = [['x'].concat(jsonData.x)];
 
       $("#host-selection input[type='text']").eq(2).tagsinput('items').forEach(function(hostname){
-        console.log(hostname);
         columns.push([hostname].concat(jsonData[hostname][propertyName]));
       });
-      var chart = c3.generate({
+
+      charts[propertyName] = c3.generate({
         bindto: '#chart_' + propertyName,
         data: {
           x: 'x',
@@ -255,6 +279,14 @@ function setupPropertySelection(){
               format: '%d.%m.%Y %H:%M:%S',
               values: [jsonData.x[0], jsonData.x[jsonData.x.length-1]]
             }
+          }
+        },
+        grid: {
+          x: {
+            show: false
+          },
+          y: {
+            show: true
           }
         }
       });
@@ -273,7 +305,7 @@ function setupPropertySelection(){
         jsonData[hostname] = {};
       }
 
-        properties.forEach(function(property) {
+      properties.forEach(function(property) {
         var name = property.replace("_"," ");
 
         if(!jsonData.hasOwnProperty(name)){
@@ -283,6 +315,17 @@ function setupPropertySelection(){
         json.history.forEach(function(histEntry){
           jsonData[hostname][name].push(histEntry[name]);
         });
+      });
+      console.log(hostname + " integrated");
+    }
+
+    function setupDefaultValues(hosts, properties){
+      hosts.forEach(function(host){
+        $("#host-selection input[type='text']").eq(2).tagsinput('add', host);
+      });
+
+      properties.forEach(function(property){
+        $("#property-selection input[type='text']").eq(2).tagsinput('add', property);
       });
     }
 
@@ -297,53 +340,5 @@ function setupPropertySelection(){
       setupHostDialog();
       setupHostSelection();
 
-
-      //alert("hello world");
-      /*var showText="Show";
-      var hideText="Hide";
-      $(".toggle").prev().append(' (<a href="#" class="toggleLink">'+showText+'</a>)');
-      $('.toggle').hide();
-      $('a.toggleLink').click(function() {
-      $(this).parent().next('.toggle').toggle('slow');
-      if ($(this).html()==showText) {
-      $(this).html(hideText); // change text of link from 'Show' to 'Hide'
-
-      // draw chart in canvas (once)
-      $(this).parent().next('.toggle').children('canvas').each(function(index,value){
-      if(graphInformation[value.id] !== undefined){
-      // show item for creation
-      $('#'+value.id).show();
-
-      // draw graph in/on pre-existing canvas
-      var context = document.getElementById(value.id).getContext('2d');
-      charts[value.id] = new Chart(context).Line(graphInformation[value.id],graphOptions);
-
-      // get rid of cached information => chart is created only once
-      delete graphInformation[value.id];
-
-      // hide graph if necessary
-      var attributeClass = $('#'+value.id).attr('class');
-      if(!$('#'+attributeClass+'Checkbox').is(':checked')){
-      $('#'+value.id).hide();
-    }
-  }
-});
-}
-else {
-$(this).html(showText); // change text of link from 'Hide' to 'Show'
-}
-return false;
-});
-
-// set up eventhandlers for attribute-checkboxes
-/*var attributes = ['voltageAtr','currentAtr','cputempAtr','pmutempAtr','hddtempAtr'];
-attributes.forEach(function(attribute) {
-$('#'+attribute+'Checkbox').change(function(checkbox){
-if(checkbox.currentTarget.checked){
-$('.'+checkbox.currentTarget.value).show();
-}else {
-$('.'+checkbox.currentTarget.value).hide();
-}
-});
-});*/
-});
+      setupDefaultValues(["PI0", "PI1", "PI2"],[/*"voltage", "current", "cputemp", "pmutemp", "hddtemp"*/]);
+    });
