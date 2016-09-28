@@ -5,9 +5,13 @@ var hosts = ["PI0","PI1","PI2","PI3","PI4","PI5","PI6","PI7","PI8","PI9","PI10",
 "PI12","PI13","PI14","PI15","PI16","PI17","PI18","PI19"];
 
 var units = {"current": "[A]", "voltage": "[V]", "cputemp": "[°C]", "hddtemp" : "[°C]",
- "pmutemp": "[°C]", "cpu0freq": "[MHz]","cpu1freq": "[MHz]","txbytes": "MB","rxbytes": "MB","Free_RAM": "MB","Uptime":"","Users_logged_on":"","Load":"[%]" };
+"pmutemp": "[°C]", "cpu0freq": "[MHz]","cpu1freq": "[MHz]","txbytes": "MB","rxbytes": "MB","Free_RAM": "MB","Uptime":"","Users_logged_on":"","Load":"[%]" };
 
-var jsonFiles = {};
+var defaultValues = {
+  hosts: ["PI0","PI1","PI2"],
+  properties: ["voltage", "current", "cputemp", "pmutemp", "hddtemp"]
+};
+
 var jsonData = {"x":[]};
 var charts = {};
 var dateRange = [];
@@ -15,46 +19,6 @@ var dateRange = [];
 var graphInformation = {}; // caches graph info before drawing
 var charts = {}; // holds references to drawn charts
 
-// define global options for all history-graphs
-var graphOptions = {
-  // avoid partial cutoff of leading digits of y-axis
-  scaleLabel : function(object) {return " " + object.value;},
-
-  animation: false, // disabling animation to improve performance and be more consistent with show/hide
-
-  scaleShowGridLines : true, //Boolean - Whether grid lines are shown across the chart
-
-  scaleGridLineColor : 'rgba(0,0,0,.05)', //String - Colour of the grid lines
-
-  scaleGridLineWidth : 1, //Number - Width of the grid lines
-
-  scaleBeginAtZero: true, // Set the start value
-
-  scaleShowHorizontalLines: true, //Boolean - Whether to show horizontal lines (except X axis)
-
-  scaleShowVerticalLines: true, //Boolean - Whether to show vertical lines (except Y axis)
-
-  bezierCurve : false, //Boolean - Whether the line is curved between points
-
-  bezierCurveTension : 0.4, //Number - Tension of the bezier curve between points
-
-  pointDot : true, //Boolean - Whether to show a dot for each point
-
-  pointDotRadius : 4,
-
-  pointDotStrokeWidth : 1, //Number - Pixel width of point dot stroke
-
-  //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-  pointHitDetectionRadius : 5,
-
-  datasetStroke : true, //Boolean - Whether to show a stroke for datasets
-
-  datasetStrokeWidth : 2, //Number - Pixel width of dataset stroke
-
-  datasetFill : true, //Boolean - Whether to fill the dataset with a colour
-
-  tooltipTemplate: "<%if (label){%><%=label%> => <%}%><%= value %>"
-};
 
 function setupSortableDivs(){
   $( "#sortable" ).sortable();
@@ -190,15 +154,15 @@ function setupPropertySelection(){
         var hostname = event.item;
         $("#chk_" + hostname).prop('checked', true);
         $("#chk_" + hostname).button( "refresh" );
-        if(! jsonFiles.hasOwnProperty(hostname)){
+        if(! jsonData.hasOwnProperty(hostname)){
           $.getJSON("history/" + hostname + ".json").done(function(json){
-            jsonFiles[hostname] = json;
             integrateJsonData(hostname, json);
 
             // update existing charts (wait for data)
             for(var propertyName in charts) {
               charts[propertyName].load({columns:[[hostname].concat(jsonData[hostname][propertyName])]});
             }
+
           })
           .fail(function( jqxhr, textStatus, error ) {
             var err = textStatus + ", " + error;
@@ -237,16 +201,16 @@ function setupPropertySelection(){
       switch(propertyName){
         case "voltage":
         case "current":
-          return value / 1000000;
+        return value / 1000000;
         case "cpu0freq":
         case "cpu1freq":
-          return value / 1000;
+        return value / 1000;
         case "cputemp":
         case "pmutemp":
-          return value.replace("°C","");
+        return value.replace("°C","");
         case "txbytes":
         case "rxbytes":
-          return value / 1000000;
+        return value / 1000000;
         default:
         return value;
       }
@@ -281,11 +245,13 @@ function setupPropertySelection(){
     }
 
     function setupChart(propertyName){
-      console.log("updating chart");
       columns = [['x'].concat(jsonData.x)];
-
+      console.log("setting up chart for " + propertyName);
       $("#host-selection input[type='text']").eq(2).tagsinput('items').forEach(function(hostname){
-        columns.push([hostname].concat(jsonData[hostname][propertyName]));
+        console.log("adding data from " + hostname);
+        if(jsonData.hasOwnProperty(hostname)){
+          columns.push([hostname].concat(jsonData[hostname][propertyName]));
+        }
       });
 
       charts[propertyName] = c3.generate({
@@ -319,7 +285,10 @@ function setupPropertySelection(){
           y: {
             show: true
           }
-        }
+        },
+        padding: {
+            bottom: 30
+         }
       });
     }
 
@@ -394,14 +363,21 @@ function setupPropertySelection(){
       console.log(hostname + " integrated");
     }
 
-    function setupDefaultValues(hosts, properties){
-      hosts.forEach(function(host){
+    function setupDefaultValues(){
+      defaultValues.hosts.forEach(function(host){
         $("#host-selection input[type='text']").eq(2).tagsinput('add', host);
       });
 
-      properties.forEach(function(property){
-        $("#property-selection input[type='text']").eq(2).tagsinput('add', property);
-      });
+      var ival = setTimeout(function(){
+        if(defaultValues.properties.every(function(property){
+          return $.inArray(property,Object.keys(jsonData));
+        })){
+          defaultValues.properties.forEach(function(property){
+            $("#property-selection input[type='text']").eq(2).tagsinput('add', property);
+          });
+        }    // TODO: periodically check or somewhat wait for all default-hosts
+      }, 200);
+
     }
 
     // TODO: normalize values
@@ -415,5 +391,5 @@ function setupPropertySelection(){
       setupHostDialog();
       setupHostSelection();
 
-      setupDefaultValues(["PI0", "PI1", "PI2"],[/*"voltage", "current", "cputemp", "pmutemp", "hddtemp"*/]);
+      setupDefaultValues();
     });
