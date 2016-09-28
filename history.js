@@ -336,6 +336,14 @@ function setupPropertySelection(){
           maxDate:  new Date(jsonData.x[jsonData.x.length-1]),
           onSelect: function(date) {
             dateRange[0] = new Date(date);
+
+            // if the user selected the first day on record, do not start chart
+            // with 00:00, start instead with time of first entry (e.g. 09:00) (no leading "empty-space")
+            var firstdate = new Date(jsonData.x[0]);
+            if(dateRange[0].toDateString() == firstdate.toDateString()){
+              dateRange[0] = firstdate;
+            }
+
             // update existing charts
             for(var propertyName in charts) {
               charts[propertyName].axis.range({min: {x: dateRange[0]}});
@@ -350,6 +358,14 @@ function setupPropertySelection(){
           maxDate:  new Date(jsonData.x[jsonData.x.length-1]),
           onSelect: function(date) {
             dateRange[1] = new Date(date);
+
+            // if the user selected the last day on record, do not end chart
+            // with 00:00, end instead with time of last entry (e.g. 09:00) (no trailing "empty-space")
+            var lastdate = new Date(jsonData.x[jsonData.x.length-1]);
+            if(dateRange[1].toDateString() == lastdate.toDateString()){
+              dateRange[1] = lastdate;
+            }
+
             // update existing charts
             for(var propertyName in charts) {
               charts[propertyName].axis.range({max:{x: dateRange[1]}});
