@@ -4,9 +4,13 @@ var properties = ["current", "voltage", "cputemp", "hddtemp", "pmutemp", "cpu0fr
 var hosts = ["PI0","PI1","PI2","PI3","PI4","PI5","PI6","PI7","PI8","PI9","PI10","PI11",
 "PI12","PI13","PI14","PI15","PI16","PI17","PI18","PI19"];
 
+var units = {"current": "[A]", "voltage": "[V]", "cputemp": "[°C]", "hddtemp" : "[°C]",
+ "pmutemp": "[°C]", "cpu0freq": "[MHz]","cpu1freq": "[MHz]","txbytes": "MB","rxbytes": "MB","Free_RAM": "MB","Uptime":"","Users_logged_on":"","Load":"[%]" };
+
 var jsonFiles = {};
 var jsonData = {"x":[]};
 var charts = {};
+var dateRange = [];
 
 var graphInformation = {}; // caches graph info before drawing
 var charts = {}; // holds references to drawn charts
@@ -95,7 +99,7 @@ function setupPropertySelection(){
       }
       else{
         $("#sortable").append('<li id="p_' + propertyName +'" class="ui-state-default">' +
-        '<div><p>' +  propertyName + '</p><div id="chart_' + propertyName +'"></div></div></li>');
+        '<div><p class="propertyTitle">' +  propertyName +" "+ units[propertyName] + '</p><div id="chart_' + propertyName +'"></div></div></li>');
 
         setupSortableDivs();
 
@@ -203,7 +207,7 @@ function setupPropertySelection(){
         }else{
           // immediately update existing charts (data is there)
           for(var propertyName in charts) {
-              charts[propertyName].show([hostname],{withLegend: true});
+            charts[propertyName].show([hostname],{withLegend: true});
           }
         }
         console.log(hostname + " added");
@@ -217,7 +221,7 @@ function setupPropertySelection(){
         // update existing charts
         for(var propertyName in charts) {
           //charts[propertyName].unload({ids: [hostname]});
-            charts[propertyName].hide([hostname],{withLegend: true});
+          charts[propertyName].hide([hostname],{withLegend: true});
         }
         console.log(hostname + " removed");
       });
@@ -227,6 +231,25 @@ function setupPropertySelection(){
         hostDialog.dialog( "open" );
       });
 
+    }
+
+    function conformJsonValue(propertyName, value){
+      switch(propertyName){
+        case "voltage":
+        case "current":
+          return value / 1000000;
+        case "cpu0freq":
+        case "cpu1freq":
+          return value / 1000;
+        case "cputemp":
+        case "pmutemp":
+          return value.replace("°C","");
+        case "txbytes":
+        case "rxbytes":
+          return value / 1000000;
+        default:
+        return value;
+      }
     }
 
     function setupHostDialog(){
@@ -275,9 +298,17 @@ function setupPropertySelection(){
         axis: {
           x: {
             type: 'timeseries',
+            min: dateRange[0],
+            max: dateRange[1],
             tick: {
               format: '%d.%m.%Y %H:%M:%S',
-              values: [jsonData.x[0], jsonData.x[jsonData.x.length-1]]
+              //values: []
+              //values: [jsonData.x[0], jsonData.x[jsonData.x.length-1]]
+            }
+          },
+          y: {
+            tick: {
+              format: d3.format(",.2f")
             }
           }
         },
@@ -299,6 +330,34 @@ function setupPropertySelection(){
           //TODO: reliably filter out zone, or find appropriate format-string!
           jsonData.x.push(histEntry.date.replace("CEST ",""));
         });
+
+        $("#datefrom").datepicker({
+          minDate: new Date(jsonData.x[0]),
+          maxDate:  new Date(jsonData.x[jsonData.x.length-1]),
+          onSelect: function(date) {
+            dateRange[0] = new Date(date);
+            // update existing charts
+            for(var propertyName in charts) {
+              charts[propertyName].axis.range({min: {x: dateRange[0]}});
+            }
+          }
+        });
+        $("#datefrom").datepicker('setDate', new Date(jsonData.x[0]));
+
+        $("#dateto").datepicker({
+          value: new Date(jsonData.x[jsonData.x.length-1]),
+          minDate: new Date(jsonData.x[0]),
+          maxDate:  new Date(jsonData.x[jsonData.x.length-1]),
+          onSelect: function(date) {
+            dateRange[1] = new Date(date);
+            // update existing charts
+            for(var propertyName in charts) {
+              charts[propertyName].axis.range({max:{x: dateRange[1]}});
+            }
+          }
+        });
+        $("#dateto").datepicker('setDate', new Date(jsonData.x[jsonData.x.length-1]));
+
       }
 
       if(!jsonData.hasOwnProperty(hostname)){
@@ -313,7 +372,7 @@ function setupPropertySelection(){
         }
 
         json.history.forEach(function(histEntry){
-          jsonData[hostname][name].push(histEntry[name]);
+          jsonData[hostname][name].push(conformJsonValue(name, histEntry[name]));
         });
       });
       console.log(hostname + " integrated");

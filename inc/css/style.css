@@ -95,3 +95,6 @@ ul {
 
 td {background-color: white;}
 .tagsBtn {margin: 0px; width: 100%; height: 100%;}
+
+.ui-sortable > li {margin-top: 5px;}
+.propertyTitle {padding-left: 0.5em; background-color: #CCCCCC;}

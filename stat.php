@@ -538,7 +538,10 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
             </li>
             <li class="ui-state-default">
               <div id="date-range-selection">
-                <p>"date-range-selection"</p>
+                <label for="from">From</label>
+                <input type="text" id="datefrom" name="from">
+                <label for="to">to</label>
+                <input type="text" id="dateto" name="to">
               </div>
             </li>
             <div id="dialog-properties" title="Displayed properties:">
