@@ -297,8 +297,8 @@ function setupPropertySelection(){
           }
         },
         padding: {
-            bottom: 30
-         }
+          bottom: 30
+        }
       });
     }
 
@@ -355,29 +355,29 @@ function setupPropertySelection(){
 
       }
 
-      if(!jsonData.hasOwnProperty(hostname)){
-        jsonData[hostname] = {};
-        properties.forEach(function(property){
-          jsonData[hostname][property.split("_").join(" ")] = [];
-        });
-      }
+      var data = {};
+      properties.forEach(function(property){
+        data[property.split("_").join(" ")] = [];
+      });
 
-        json.history.forEach(function(histEntry){
-          jsonData[hostname].voltage.push(histEntry.voltage / 1000000);
-          jsonData[hostname].current.push(histEntry.current / 1000000);
-          jsonData[hostname].cpu0freq.push(histEntry.cpu0freq / 1000);
-          jsonData[hostname].cpu1freq.push(histEntry.cpu1freq / 1000);
-          jsonData[hostname].cputemp.push(histEntry.cputemp.replace("°C",""));
-          jsonData[hostname].pmutemp.push(histEntry.pmutemp.replace("°C",""));
-          jsonData[hostname].txbytes.push(histEntry.txbytes / 1000000);
-          jsonData[hostname].rxbytes.push(histEntry.rxbytes / 1000000);
+      json.history.forEach(function(histEntry){
+        data.voltage.push(histEntry.voltage / 1000000);
+        data.current.push(histEntry.current / 1000000);
+        data.cpu0freq.push(histEntry.cpu0freq / 1000);
+        data.cpu1freq.push(histEntry.cpu1freq / 1000);
+        data.cputemp.push(histEntry.cputemp.replace("°C",""));
+        data.pmutemp.push(histEntry.pmutemp.replace("°C",""));
+        data.txbytes.push(histEntry.txbytes / 1000000);
+        data.rxbytes.push(histEntry.rxbytes / 1000000);
 
-          jsonData[hostname].hddtemp.push(histEntry.hddtemp);
-          jsonData[hostname]["Free RAM"].push(histEntry["Free RAM"]);
-          jsonData[hostname].Uptime.push(histEntry.Uptime);
-          jsonData[hostname]["Users logged on"].push(histEntry["Users logged on"]);
-          jsonData[hostname].Load.push(histEntry.Load);
-        });
+        data.hddtemp.push(histEntry.hddtemp);
+        data["Free RAM"].push(histEntry["Free RAM"]);
+        data.Uptime.push(histEntry.Uptime);
+        data["Users logged on"].push(histEntry["Users logged on"]);
+        data.Load.push(histEntry.Load);
+      });
+
+      jsonData[hostname] = data;
       console.log(hostname + " integrated");
     }
 
@@ -386,19 +386,20 @@ function setupPropertySelection(){
         $("#host-selection input[type='text']").eq(2).tagsinput('add', host);
       });
 
-      var ival = setTimeout(function(){
-        if(defaultValues.properties.every(function(property){
-          return $.inArray(property,Object.keys(jsonData));
-        })){
-          defaultValues.properties.forEach(function(property){
-            $("#property-selection input[type='text']").eq(2).tagsinput('add', property);
-          });
-        }    // TODO: periodically check or somewhat wait for all default-hosts
-      }, 500);
-
+      drawChartsIfHostDataAvailable();
     }
 
-    // TODO: normalize values
+    // periodically check if all default-host-data has been downloaded and integrated
+    function drawChartsIfHostDataAvailable() {
+      if(defaultValues.hosts.every(function(host){
+        return $.inArray(host,Object.keys(jsonData)) != -1;
+      })){
+        defaultValues.properties.forEach(function(property){
+          $("#property-selection input[type='text']").eq(2).tagsinput('add', property);
+        });
+      }
+      else { setTimeout(drawChartsIfHostDataAvailable, 50);}
+    }
 
     $(document).ready(function() {
       setupSortableDivs();
