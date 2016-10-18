@@ -31,7 +31,23 @@ $hostlist=array(  // jsonFilename => sourceUrl
   'PI2.json' => '127.0.0.1',
   'PI3.json' => '127.0.0.1',
   'PI4.json' => '127.0.0.1',
-  'PI5.json' => '127.0.0.1'
+  'PI6.json' => '127.0.0.1',
+  'PI7.json' => '127.0.0.1',
+  'PI8.json' => '127.0.0.1',
+  'PI9.json' => '127.0.0.1',
+  'PI10.json' => '127.0.0.1',
+  'PI5.json' => '127.0.0.1',
+  'PI11.json' => '127.0.0.1',
+  'PI12.json' => '127.0.0.1',
+  'PI13.json' => '127.0.0.1',
+  'PI14.json' => '127.0.0.1',
+  'PI15.json' => '127.0.0.1',
+  'PI16.json' => '127.0.0.1',
+  'PI17.json' => '127.0.0.1',
+  'PI18.json' => '127.0.0.1',
+  'PI19.json' => '127.0.0.1',
+  'PI20.json' => '127.0.0.2',
+  'PI21.json' => '127.0.0.1'
 );
 
 // path to a JSON-file on respective hosts
@@ -39,6 +55,7 @@ $jsonFilePath = 'stat.json';
 
 // hostIP => rtt[ms]
 $pingResults = array();
+$avgPingTime = 0;
 
 ## Set this to "secure" the history saving. This key has to be given as a parameter to save the history.
 $historykey = "8A29691737D";
@@ -59,7 +76,7 @@ function getJsonUrl($filename){
 }
 
 // Collects the names of all files in the history-folder
-function readHistoryFiles(){
+/*function readHistoryFiles(){
   global $historyFiles;
   global $hostlist;
 
@@ -82,9 +99,10 @@ function readHistoryFiles(){
   foreach($historyFiles as $key => $value){
     asort($historyFiles[$key]);
   }
-}
+}*/
 
 // Returns a dataset containing all (historic) statistic information of a given jsonFile-name
+/*
 function getHistoryDatasets($jsonFilename) {
   global $historyFiles;
   $dataset = array();
@@ -103,10 +121,11 @@ function getHistoryDatasets($jsonFilename) {
     }
   }
   return $dataset;
-}
+}*/
 
 // Transforms the jsonObjects respective values in units more suitable
 // to be displayed in the history
+/*
 function conformJsonValues($jsonObject) {
   $jsonObject['cpu0freq'] = intval($jsonObject['cpu0freq'])/1000;
   $jsonObject['cpu1freq'] = intval($jsonObject['cpu1freq'])/1000;
@@ -116,18 +135,18 @@ function conformJsonValues($jsonObject) {
   $jsonObject['current'] = intval($jsonObject['current'])/1000000;
 
   return $jsonObject;
-}
+}*/
 
 // Prints a percentage-bar visualizing a given $percentage
 // bar via http://www.joshuawinn.com/quick-and-simple-css-percentage-bar-using-php/
-function percentagebar($percentage) {
+/*function percentagebar($percentage) {
 
   $percentage = str_replace("%", "",$percentage);
   echo "<p>".$percentage . "%</p>";
   echo "<div class=\"percentbar\" style=\"width: 100px;\">";
   echo "<div style=\"width:".round($percentage)."px;\">";
   echo "</div></div>";
-}
+}*/
 
 // Requests a remote file and saves it in the history-folder under a $newFilename
 // Saves a "zeroed" file, if a host is unreachable, if the file could not be
@@ -180,7 +199,7 @@ function addToHistory($jsonFilename, $json) {
 
 // Print current information about a Pi in form of a Table
 // based on the information in file $jsonFilename
-function printStatTable($jsonObject) {
+/*function printStatTable($jsonObject) {
   ?>
   <tr>
     <th>Uptime</th>
@@ -305,14 +324,14 @@ function printStatTable($jsonObject) {
     </td>
   </tr>
   <?php
-}
+}*/
 
 // Pings a given $host and prints the result
 function getPingResultHtml($hostIP, $port, $timeout) {
   global $pingResults;
   $rtt = $pingResults[$hostIP];
-  if ($rtt < 0) {  return '<span class="down">' . $hostIP . ' DOWN from here. </span>'; }
-  else return '<span class="up">' . $hostIP . ' ' . number_format($rtt,2).' ms UP</span>';
+  if ($rtt < 0) {  return '<div class="grid-item down">' . $hostIP . ' DOWN </div>'; }
+  else return '<div class="grid-item up">' . $hostIP . ' UP </div>';;
 }
 
 // returns the roundtriptime in [ms] if reachable or else -1
@@ -325,19 +344,30 @@ function ping($hostIP,$port,$timeout){
 }
 
 // ping all hosts in hostlist, timeout=100[ms]
+// store individual ping results and a average rtt in global datastructures
 function pingHosts(){
   global $hostlist;
   global $pingResults;
+  $avgPingTime = 0;
+  $successfullPings = 0;
+
   foreach ($hostlist as $jsonFilename => $hostIP) {
     $pingResults[$hostIP] = ping($hostIP,80,0.1);
+    $rtt = $pingResults[$hostIP];
+    if(rtt > -1){
+      $avgPingTime += $rtt;
+      $successfullPings += 1;
+    }
   }
+  if($successfullPings > 0)
+    $avgPingTime = $avgPingTime / $successfullPings;
 }
 
 // Read all historic information of a certain
 // attribute ($dtype) of a certain Pi ($pi_index)
 // and store it in a cache, until it is used to actually
 // draw the graph, also adds a HTML-canvas as base for the graph
-function genGraphInformation($pi_index, $dtype, $datasets)
+/*function genGraphInformation($pi_index, $dtype, $datasets)
 {
   $labels = "";
   $i = 0;
@@ -386,7 +416,7 @@ function genGraphInformation($pi_index, $dtype, $datasets)
     ]
   };
   </script>";
-}
+}*/
 
 // returns a zero-padded version of a given $string
 // just a wrapper for str_pad()
@@ -438,10 +468,11 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
   <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />       <!-- CUSTOM STYLES -->
 
   <style type="text/css">
-  body {font-size: 20px;}
-  .up {color: green;}
-  .down {color: red;}
-  .percentbar { background:#CCCCCC; border:1px solid #666666; height:10px; }
+  body {font-size: 15px;}
+  .up {color: white; background: green;  text-shadow: 2px 2px 4px #000000;}
+  .down {color: white; background: red;  text-shadow: 2px 2px 4px #000000;}
+  .header {font-weight: bold; border: 1px solid black;}
+  .percentbar { background:#CCCCCC; border:2px solid #666666; height:10px; }
   .percentbar div { background: #28B8C0; height: 10px; }
   #tab-status.tab-content.clearfix table.striped tbody tr.last td p {color: black; text-align: center; margin-bottom: 0px;}
   #tab-status.tab-content.clearfix table.striped tbody tr.last td {font-size: 14.4px; line-height: 130%;}
@@ -486,30 +517,19 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
         </ul>
         <div id="tab-status" class="tab-content" data-tab-index="0">
           <?php
-          echo "<i>Ping monitor:</i>";
+          // draw ping-results
+          echo '<div id="pingMonitor" class="grid">';
+          echo '<div class="grid-item header">Ping monitor (avg ' . $avgPingTime . 'ms)</div>';
           foreach ($hostlist as $key => $hostIP) {
-            echo getPingResultHtml("$hostIP",80,1) . ", ";
+            echo getPingResultHtml("$hostIP",80,1);
           }
-          ?>
-          <h4>Server Status</h4>
-          <?php
-          foreach ($hostlist as $jsonFilename => $hostIP) {
-            $host=parse_url(getJsonUrl($jsonFilename),PHP_URL_HOST);
-            downloadRemoteFile($hostIP,$jsonFilename); // get the current json-file
+          echo '</div>';
 
-            if ($file = file_get_contents($jsonFilename)) {
-              if ($jsonObject = json_decode($file, true)) {
-                echo "<h5>Host: ${host} (${jsonObject['date']})</h5>";
-                echo "<table class=\"striped\">";
-                printStatTable($jsonObject);
-                echo "</table>";
-                echo "<hr class=\"alt1\" />";
-              } else {
-                echo "Error decoding JSON stat file for host $host.\n";
-              }
-            } else  {
-              echo "Could not retrieve JSON-file for host $host.\n";
-            }
+          // draw individual host-status-stubs
+          foreach($hostlist as $key => $hostIP){
+              echo '<div id="host' . $hostIP . '" class="grid hoststatus">';
+              echo '<div class="grid-item header">Host: ' . $hostIP . ' (pending)</div>';
+              echo '</div>';
           }
           ?>
         </div>
