@@ -1,15 +1,12 @@
 var properties = ["current", "voltage", "cputemp", "hddtemp", "pmutemp", "cpu0freq",
 "cpu1freq","txbytes","rxbytes","Free_RAM","Uptime","Users_logged_on","Load"];
 
-var hosts = ["PI0","PI1","PI2","PI3","PI4","PI5","PI6","PI7","PI8","PI9","PI10","PI11",
-"PI12","PI13","PI14","PI15","PI16","PI17","PI18","PI19"];
+var hosts = [];
 
 var units = {"current": "[A]", "voltage": "[V]", "cputemp": "[°C]", "hddtemp" : "[°C]",
 "pmutemp": "[°C]", "cpu0freq": "[MHz]","cpu1freq": "[MHz]","txbytes": "MB","rxbytes": "MB","Free_RAM": "MB","Uptime":"","Users_logged_on":"","Load":"[%]" };
 
 var defaultValues = {
-  hosts: ["PI0","PI1","PI2","PI3","PI4","PI5","PI6","PI7","PI8","PI9","PI10","PI11",
-  "PI12","PI13","PI14","PI15","PI16","PI17","PI18","PI19"],
   properties: ["voltage", "current", "cputemp", "pmutemp", "hddtemp"]
 };
 
@@ -156,7 +153,7 @@ function setupHostSelection(){
     $("#chk_" + hostname).prop('checked', true);
     $("#chk_" + hostname).button( "refresh" );
     if(! jsonData.hasOwnProperty(hostname)){
-      $.getJSON("history/" + hostname + ".json").done(function(json){
+      $.getJSON("history/" + hostname + "_hist.json").done(function(json){
         integrateJsonData(hostname, json);
 
         // update existing charts (wait for data)
@@ -382,16 +379,16 @@ function integrateJsonData(hostname, json){
 }
 
 function setupDefaultValues(){
-  defaultValues.hosts.forEach(function(host){
+  /*defaultValues.hosts.forEach(function(host){
     $("#host-selection input[type='text']").eq(2).tagsinput('add', host);
-  });
+  });*/
 
   drawChartsIfHostDataAvailable();
 }
 
 // periodically check if all default-host-data has been downloaded and integrated
 function drawChartsIfHostDataAvailable() {
-  if(defaultValues.hosts.every(function(host){
+  if(hosts.every(function(host){
     return $.inArray(host,Object.keys(jsonData)) != -1;
   })){
     defaultValues.properties.forEach(function(property){

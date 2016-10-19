@@ -28,28 +28,27 @@ Following is the LICENSE-note of the program that served as base for this one:
 $maxNumberOfHistoryEntries = 5;
 
 $hostlist=array(  // jsonFilename => sourceUrl
-  'PI0.json' => '127.0.0.1',
-  'PI1.json' => '127.0.0.1',
-  'PI2.json' => '127.0.0.1',
-  'PI3.json' => '127.0.0.1',
-  'PI4.json' => '127.0.0.1',
-  'PI6.json' => '127.0.0.1',
-  'PI7.json' => '127.0.0.1',
-  'PI8.json' => '127.0.0.1',
-  'PI9.json' => '127.0.0.1',
-  'PI10.json' => '127.0.0.1',
-  'PI5.json' => '127.0.0.1',
-  'PI11.json' => '127.0.0.1',
-  'PI12.json' => '127.0.0.1',
-  'PI13.json' => '127.0.0.1',
-  'PI14.json' => '127.0.0.1',
-  'PI15.json' => '127.0.0.1',
-  'PI16.json' => '127.0.0.1',
-  'PI17.json' => '127.0.0.1',
-  'PI18.json' => '127.0.0.1',
-  'PI19.json' => '127.0.0.1',
-  'PI20.json' => '127.0.0.2',
-  'PI21.json' => '127.0.0.1'
+  'PI0.json' => '127.0.0.10',
+  'PI1.json' => '127.0.0.11',
+  'PI2.json' => '127.0.0.12',
+  'PI3.json' => '127.0.0.13',
+  'PI4.json' => '127.0.0.14',
+
+  'PI6.json' => '127.0.0.15',
+  'PI7.json' => '127.0.0.16',
+  'PI8.json' => '127.0.0.17',
+  'PI9.json' => '127.0.0.18',
+  'PI10.json' => '127.0.0.19',
+  'PI5.json' => '127.0.0.20',
+  'PI11.json' => '127.0.0.21',
+  'PI12.json' => '127.0.0.22',
+  'PI13.json' => '127.0.0.23',
+  'PI14.json' => '127.0.0.24',
+  'PI15.json' => '127.0.0.25',
+  'PI16.json' => '127.0.0.26',
+  'PI17.json' => '127.0.0.27',
+  'PI18.json' => '127.0.0.28',
+  'PI19.json' => '127.0.0.29'
 );
 
 // path to a JSON-file on respective hosts
@@ -82,7 +81,7 @@ function getJsonUrl($filename){
   return "http://" . $hostlist[$filename] . "/$jsonFilePath";
 }
 
-// Requests a remote file and saves it in the history-folder under a $newFilename
+// Requests a remote file and saves under a $newFilename
 // Saves a "zeroed" file, if a host is unreachable, if the file could not be
 // downloaded or if the file came back empty
 function downloadRemoteFile($hostIP,$newFilename){
@@ -457,11 +456,16 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
     echo "History for: ". $jsonFilename . " saved. <br />\n" ;
   }
   exit("History done.<br /> \n"); // end the script at this point
+}else { // normal call
+  foreach ($hostlist as $jsonFilename => $hostIP) {
+  //  downloadRemoteFile($hostIP, $jsonFilename); // get the current json-file
+  }
 }
 
 //
 // 'Normal' - call of the script, display the overview and history
 //
+
 ?>
 <!DOCTYPE html>
 <html>

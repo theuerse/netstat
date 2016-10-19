@@ -13,13 +13,17 @@ body {
    border: 1px solid black;
 }
 
-#pingMonitor .up {
+span.caption {
+  font-weight: bold;
+}
+
+#pingMonitor .up, .grid-item .up {
   color: white;
   background: green;
   text-shadow: 2px 2px 4px #000000;
 }
 
-#pingMonitor .down {
+#pingMonitor .down, .grid-item .down {
   color: white;
   background: red;
   text-shadow: 2px 2px 4px #000000;
@@ -50,7 +54,6 @@ body {
   border-radius: 0.5em;
   padding: 5px;
   margin: 2px;
-  height: 2em;
   display: inline-block;
 }
 
