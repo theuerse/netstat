@@ -22,7 +22,9 @@ Following is the LICENSE-note of the program that served as base for this one:
 #THE SOFTWARE.
 */
 
-// <CONFIGURATION>
+//
+// Configuration-Options
+//
 $maxNumberOfHistoryEntries = 5;
 
 $hostlist=array(  // jsonFilename => sourceUrl
@@ -51,6 +53,8 @@ $hostlist=array(  // jsonFilename => sourceUrl
 );
 
 // path to a JSON-file on respective hosts
+// here, the JSON-file is called stat.json and resides in the document-root
+// of the webservers on the repective hosts
 $jsonFilePath = 'stat.json';
 
 // hostIP => rtt[ms]
@@ -63,10 +67,13 @@ $historykey = "8A29691737D";
 #Set this or your logs will fill up your disk. // TODO: REALLY?
 date_default_timezone_set('Europe/Vienna');
 
-// </CONFIGURATION>
-
 $historyFiles = array(); // global array for storing the name of all files in the history-folder
 
+
+
+//
+// Utility-functions, used in "main-program"
+//
 
 // e.g. PI18.json' => 'http://192.168.0.28/stat.json'
 function getJsonUrl($filename){
@@ -74,79 +81,6 @@ function getJsonUrl($filename){
   global $jsonFilePath;
   return "http://" . $hostlist[$filename] . "/$jsonFilePath";
 }
-
-// Collects the names of all files in the history-folder
-/*function readHistoryFiles(){
-  global $historyFiles;
-  global $hostlist;
-
-  $historyFiles = array();
-
-  if ($handle = opendir('./history/')) {
-    while (false !== ($entry = readdir($handle))) {
-      $filenameParts = explode(".", $entry);
-      $jsonFilename = $filenameParts[0] . '.' . $filenameParts[1];
-
-      if(!isset($historyFiles[$jsonFilename])) $historyFiles[$jsonFilename] = array();
-      array_push($historyFiles[$jsonFilename],$entry);
-    }
-    closedir($handle);
-  } else {
-    echo "<p>Error: cannot open directory './history'.</p>";
-  }
-
-  // sort entries for each $jsonFilename (in ascending order)
-  foreach($historyFiles as $key => $value){
-    asort($historyFiles[$key]);
-  }
-}*/
-
-// Returns a dataset containing all (historic) statistic information of a given jsonFile-name
-/*
-function getHistoryDatasets($jsonFilename) {
-  global $historyFiles;
-  $dataset = array();
-  $i=0;
-
-  foreach($historyFiles[$jsonFilename] as $filename){
-    $jsonFilePath = "./history/" . $filename;
-    if ($jsonFileContent = file_get_contents($jsonFilePath)) {
-      if ($jsonObject = json_decode($jsonFileContent, true)) {
-        $dataset[$i++] = conformJsonValues($jsonObject);
-      } else {
-        echo "Cannot decode json file $jsonfile.";
-      }
-    } else {
-      echo "Cannot open json file $jsonfile.";
-    }
-  }
-  return $dataset;
-}*/
-
-// Transforms the jsonObjects respective values in units more suitable
-// to be displayed in the history
-/*
-function conformJsonValues($jsonObject) {
-  $jsonObject['cpu0freq'] = intval($jsonObject['cpu0freq'])/1000;
-  $jsonObject['cpu1freq'] = intval($jsonObject['cpu1freq'])/1000;
-  $jsonObject['cputemp'] = substr($jsonObject['cputemp'],0,4);
-  $jsonObject['pmutemp'] = substr($jsonObject['pmutemp'],0,4);
-  $jsonObject['voltage'] = intval($jsonObject['voltage'])/1000000;
-  $jsonObject['current'] = intval($jsonObject['current'])/1000000;
-
-  return $jsonObject;
-}*/
-
-// Prints a percentage-bar visualizing a given $percentage
-// bar via http://www.joshuawinn.com/quick-and-simple-css-percentage-bar-using-php/
-/*function percentagebar($percentage) {
-
-  $percentage = str_replace("%", "",$percentage);
-  echo "<p>".$percentage . "%</p>";
-  echo "<div class=\"percentbar\" style=\"width: 100px;\">";
-  echo "<div style=\"width:".round($percentage)."px;\">";
-  echo "</div></div>";
-}*/
 
 // Requests a remote file and saves it in the history-folder under a $newFilename
 // Saves a "zeroed" file, if a host is unreachable, if the file could not be
@@ -196,6 +130,125 @@ function addToHistory($jsonFilename, $json) {
     exit("File $jsonFilename could not be saved in history. Please check directory permissions on directory \'history\'.");
   }
 }
+
+// returns the roundtriptime in [ms] if reachable or else -1
+function ping($hostIP,$port,$timeout){
+  $tB = microtime(true);
+  $fP = fSockOpen($hostIP, $port, $errno, $errstr, $timeout);
+  if (!$fP) return -1;
+  $tA = microtime(true);
+  return (($tA - $tB) * 1000);
+}
+
+// ping all hosts in hostlist, timeout=100[ms]
+// store individual ping results and a average rtt in global datastructures
+function pingHosts(){
+  global $hostlist;
+  global $pingResults;
+  $avgPingTime = 0;
+  $successfullPings = 0;
+
+  foreach ($hostlist as $jsonFilename => $hostIP) {
+    $pingResults[$hostIP] = ping($hostIP,80,0.1);
+    $rtt = $pingResults[$hostIP];
+    if(rtt > -1){
+      $avgPingTime += $rtt;
+      $successfullPings += 1;
+    }
+  }
+  if($successfullPings > 0)
+    $avgPingTime = $avgPingTime / $successfullPings;
+}
+
+// Pings a given $host and prints the result
+function getPingResultHtml($hostIP, $port, $timeout) {
+  global $pingResults;
+  $rtt = $pingResults[$hostIP];
+  if ($rtt < 0) {  return '<div class="grid-item down">' . $hostIP . ' DOWN </div>'; }
+  else return '<div class="grid-item up">' . $hostIP . ' UP </div>';
+}
+
+
+
+// Collects the names of all files in the history-folder
+/*function readHistoryFiles(){
+  global $historyFiles;
+  global $hostlist;
+
+  $historyFiles = array();
+
+  if ($handle = opendir('./history/')) {
+    while (false !== ($entry = readdir($handle))) {
+      $filenameParts = explode(".", $entry);
+      $jsonFilename = $filenameParts[0] . '.' . $filenameParts[1];
+
+      if(!isset($historyFiles[$jsonFilename])) $historyFiles[$jsonFilename] = array();
+      array_push($historyFiles[$jsonFilename],$entry);
+    }
+    closedir($handle);
+  } else {
+    echo "<p>Error: cannot open directory './history'.</p>";
+  }
+
+  // sort entries for each $jsonFilename (in ascending order)
+  foreach($historyFiles as $key => $value){
+    asort($historyFiles[$key]);
+  }
+}*/
+
+// returns a zero-padded version of a given $string
+// just a wrapper for str_pad()
+/*function pad($string){
+  return str_pad($string,2,'0',STR_PAD_LEFT);
+}*/
+
+// Returns a dataset containing all (historic) statistic information of a given jsonFile-name
+/*
+function getHistoryDatasets($jsonFilename) {
+  global $historyFiles;
+  $dataset = array();
+  $i=0;
+
+  foreach($historyFiles[$jsonFilename] as $filename){
+    $jsonFilePath = "./history/" . $filename;
+    if ($jsonFileContent = file_get_contents($jsonFilePath)) {
+      if ($jsonObject = json_decode($jsonFileContent, true)) {
+        $dataset[$i++] = conformJsonValues($jsonObject);
+      } else {
+        echo "Cannot decode json file $jsonfile.";
+      }
+    } else {
+      echo "Cannot open json file $jsonfile.";
+    }
+  }
+  return $dataset;
+}*/
+
+// Transforms the jsonObjects respective values in units more suitable
+// to be displayed in the history
+/*
+function conformJsonValues($jsonObject) {
+  $jsonObject['cpu0freq'] = intval($jsonObject['cpu0freq'])/1000;
+  $jsonObject['cpu1freq'] = intval($jsonObject['cpu1freq'])/1000;
+  $jsonObject['cputemp'] = substr($jsonObject['cputemp'],0,4);
+  $jsonObject['pmutemp'] = substr($jsonObject['pmutemp'],0,4);
+  $jsonObject['voltage'] = intval($jsonObject['voltage'])/1000000;
+  $jsonObject['current'] = intval($jsonObject['current'])/1000000;
+
+  return $jsonObject;
+}*/
+
+// Prints a percentage-bar visualizing a given $percentage
+// bar via http://www.joshuawinn.com/quick-and-simple-css-percentage-bar-using-php/
+/*function percentagebar($percentage) {
+
+  $percentage = str_replace("%", "",$percentage);
+  echo "<p>".$percentage . "%</p>";
+  echo "<div class=\"percentbar\" style=\"width: 100px;\">";
+  echo "<div style=\"width:".round($percentage)."px;\">";
+  echo "</div></div>";
+}*/
+
 
 // Print current information about a Pi in form of a Table
 // based on the information in file $jsonFilename
@@ -326,42 +379,7 @@ function addToHistory($jsonFilename, $json) {
   <?php
 }*/
 
-// Pings a given $host and prints the result
-function getPingResultHtml($hostIP, $port, $timeout) {
-  global $pingResults;
-  $rtt = $pingResults[$hostIP];
-  if ($rtt < 0) {  return '<div class="grid-item down">' . $hostIP . ' DOWN </div>'; }
-  else return '<div class="grid-item up">' . $hostIP . ' UP </div>';;
-}
 
-// returns the roundtriptime in [ms] if reachable or else -1
-function ping($hostIP,$port,$timeout){
-  $tB = microtime(true);
-  $fP = fSockOpen($hostIP, $port, $errno, $errstr, $timeout);
-  if (!$fP) return -1;
-  $tA = microtime(true);
-  return (($tA - $tB) * 1000);
-}
-
-// ping all hosts in hostlist, timeout=100[ms]
-// store individual ping results and a average rtt in global datastructures
-function pingHosts(){
-  global $hostlist;
-  global $pingResults;
-  $avgPingTime = 0;
-  $successfullPings = 0;
-
-  foreach ($hostlist as $jsonFilename => $hostIP) {
-    $pingResults[$hostIP] = ping($hostIP,80,0.1);
-    $rtt = $pingResults[$hostIP];
-    if(rtt > -1){
-      $avgPingTime += $rtt;
-      $successfullPings += 1;
-    }
-  }
-  if($successfullPings > 0)
-    $avgPingTime = $avgPingTime / $successfullPings;
-}
 
 // Read all historic information of a certain
 // attribute ($dtype) of a certain Pi ($pi_index)
@@ -418,11 +436,6 @@ function pingHosts(){
   </script>";
 }*/
 
-// returns a zero-padded version of a given $string
-// just a wrapper for str_pad()
-function pad($string){
-  return str_pad($string,2,'0',STR_PAD_LEFT);
-}
 
 
 
@@ -446,137 +459,106 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
   exit("History done.<br /> \n"); // end the script at this point
 }
 
-
-// 'Normal' - call of the script, display the two statistics-tabs
+//
+// 'Normal' - call of the script, display the overview and history
+//
 ?>
 <!DOCTYPE html>
 <html>
 <head>
   <title>Stats</title>
   <meta charset="utf-8"/>
-
+  <!-- Favicons -->
   <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
-  <!--<link rel="stylesheet" type="text/css" href="inc/css/kickstart.css" media="all" /> -->     <!-- KICKSTART -->
+  <!-- Stylesheets -->
   <link rel="stylesheet" type="text/css" href="inc/css/c3.css">
-  <link rel="stylesheet" type="text/css" href="inc/css/github.css">
-  <link rel="stylesheet" href="inc/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="inc/font-awesome/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="inc/css/jquery-ui.css" media="all" />
   <link rel="stylesheet" type="text/css" href="inc/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="inc/css/bootstrap-theme.min.css">
   <link rel="stylesheet" type="text/css" href="inc/css/bootstrap-tagsinput.css">
-  <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />       <!-- CUSTOM STYLES -->
-
-  <style type="text/css">
-  body {font-size: 15px;}
-  .up {color: white; background: green;  text-shadow: 2px 2px 4px #000000;}
-  .down {color: white; background: red;  text-shadow: 2px 2px 4px #000000;}
-  .header {font-weight: bold; border: 1px solid black;}
-  .percentbar { background:#CCCCCC; border:2px solid #666666; height:10px; }
-  .percentbar div { background: #28B8C0; height: 10px; }
-  #tab-status.tab-content.clearfix table.striped tbody tr.last td p {color: black; text-align: center; margin-bottom: 0px;}
-  #tab-status.tab-content.clearfix table.striped tbody tr.last td {font-size: 14.4px; line-height: 130%;}
-  #tab-status.tab-content.clearfix table.striped tbody tr.first th {font-size: 14.4px; line-height: 130%;}
-
-  </style>
-
-
+  <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />
+  <!-- JavaScript -->
   <script type="text/javascript" src="inc/js/d3.js"></script>
   <script type="text/javascript" src="inc/js/c3.js"></script>
   <script type="text/javascript" src="inc/js/jquery.js"></script>
   <script type="text/javascript" src="inc/js/jquery-ui.js"></script>
-  <script type="text/javascript" src="inc/js/typeahead.js"></script>                  <!-- JQUERY -->
+  <script type="text/javascript" src="inc/js/typeahead.js"></script>
   <script type="text/javascript" src="inc/js/bootstrap-tagsinput.js"></script>
-  <!--<script type="text/javascript" src="inc/js/prettify.js"></script>    -->                 <!-- PRETTIFY -->
-  <!--<script type="text/javascript" src="inc/js/kickstart.js"></script>   -->                  <!-- KICKSTART -->
-  <script type="text/javascript" src="Chart.js"></script>                                 <!-- Chart.JS -->
-  <script type="text/javascript" src="history.js"></script>                               <!-- client-side history-tab-->
+  <script type="text/javascript" src="history.js"></script>
+  <script type="text/javascript" src="stat.js"></script>
+</head>
 
-  <script>
-  $( function() {
-    $( "#tabs" ).tabs(
-      {
-        // remember last selected Tab
-        active: localStorage.getItem("currentTabIndex"),
-        activate: function(event, ui) {
-          localStorage.setItem("currentTabIndex", ui.newPanel[0].dataset["tabIndex"]);
+<body>
+  <a id="top-of-page"></a>
+  <div id="wrap" class="clearfix">
+    <div id="tabs">
+      <ul>
+        <li><a href="#tab-status">Overview</a></li>
+        <li><a href="#tab-history">History</a></li>
+      </ul>
+      <!-- Status-overview -->
+      <div id="tab-status" class="tab-content" data-tab-index="0">
+        <?php
+        // draw ping-results
+        echo '<div id="pingMonitor" class="grid">';
+        echo '<div class="grid-item header">Ping monitor (avg ' . $avgPingTime . 'ms)</div>';
+        echo "\n\t\t";
+        foreach ($hostlist as $key => $hostIP) {
+          echo getPingResultHtml("$hostIP",80,1);
+          echo "\n\t\t";
         }
-      });
+        echo "</div>\n\t\t";
 
-      window.scrollTo(0,0); // scroll to top
-    } );
-    </script>
-  </head>
-
-  <body>
-    <a id="top-of-page"></a><div id="wrap" class="clearfix">
-      <div id="tabs">
-        <ul>
-          <li><a href="#tab-status">Overview</a></li>
-          <li><a href="#tab-history">History</a></li>
-        </ul>
-        <div id="tab-status" class="tab-content" data-tab-index="0">
-          <?php
-          // draw ping-results
-          echo '<div id="pingMonitor" class="grid">';
-          echo '<div class="grid-item header">Ping monitor (avg ' . $avgPingTime . 'ms)</div>';
-          foreach ($hostlist as $key => $hostIP) {
-            echo getPingResultHtml("$hostIP",80,1);
-          }
-          echo '</div>';
-
-          // draw individual host-status-stubs
-          foreach($hostlist as $key => $hostIP){
-              echo '<div id="host' . $hostIP . '" class="grid hoststatus">';
-              echo '<div class="grid-item header">Host: ' . $hostIP . ' (pending)</div>';
-              echo '</div>';
-          }
-          ?>
+        // draw individual host-status-stubs
+        foreach($hostlist as $key => $hostIP){
+            echo '<div id="host' . $hostIP . '" class="grid hoststatus">';
+            echo '<div class="grid-item header">Host: ' . $hostIP . ' (pending)</div>';
+            echo "</div>\n\t\t";
+        }
+        ?>
+      </div>
+      <!-- History -->
+      <div id="tab-history" class="tab-content" data-tab-index="1">
+        <div id="property-selection">
+          <table>
+            <tr>
+              <td><button id="propertyBtn" class="tagsBtn"><i class="fa fa-cog" aria-hidden="true"></i></button></td>
+              <td><input type="text" data-role="tagsinput"/></td>
+            </tr>
+          </table>
         </div>
-        <div id="tab-history" class="tab-content" data-tab-index="1">
-          <!-- HTML-structure of history-tab -->
-          <ul id="sortable">
-            <li class="ui-state-default">
-              <div id="property-selection">
-                <table>
-                  <tr>
-                    <td><button id="propertyBtn" class="tagsBtn"><i class="fa fa-cog" aria-hidden="true"></i></button></td>
-                    <td><input type="text" data-role="tagsinput"/></td>
-                  </tr>
-                </table>
-              </div>
-            </li>
-            <li class="ui-state-default">
-              <div id="host-selection">
-                <table>
-                  <tr>
-                    <td><button id="hostBtn" class="tagsBtn"><i class="fa fa-cog" aria-hidden="true"></i></button></td>
-                    <td><input type="text" data-role="tagsinput"/></td>
-                  </tr>
-                </table>
-              </div>
-            </li>
-            <li class="ui-state-default">
-              <div id="date-range-selection">
-                <label for="from">From</label>
-                <input type="text" id="datefrom" name="from">
-                <label for="to">to</label>
-                <input type="text" id="dateto" name="to">
-              </div>
-            </li>
-            <div id="dialog-properties" title="Displayed properties:">
-              <form>
-                <fieldset></fieldset>
-              </form>
-            </div>
-            <div id="dialog-host" title="Displayed hosts:">
-              <form>
-                <fieldset></fieldset>
-              </form>
-            </div>
-            <!-- property-history-graphs are to be added here (programmatically) -->
-          </ul>
+        <div id="host-selection">
+          <table>
+            <tr>
+              <td><button id="hostBtn" class="tagsBtn"><i class="fa fa-cog" aria-hidden="true"></i></button></td>
+              <td><input type="text" data-role="tagsinput"/></td>
+            </tr>
+          </table>
+        </div>
+        <div id="date-range-selection">
+          <label for="datefrom">From</label>
+          <input type="text" id="datefrom" name="from">
+          <label for="dateto">to</label>
+          <input type="text" id="dateto" name="to">
+        </div>
+        <ul id="sortable">
+          <!-- property-history-graphs are to be added here (programmatically) -->
+        </ul>
+        <!-- basic HTML-structure of displayed dialogs -->
+        <div id="dialog-properties" title="Displayed properties:">
+          <form>
+            <fieldset></fieldset>
+          </form>
+        </div>
+        <div id="dialog-host" title="Displayed hosts:">
+          <form>
+            <fieldset></fieldset>
+          </form>
         </div>
       </div>
-    </body>
-    </html>
+    </div>
+  </div>
+</body>
+</html>

@@ -4,12 +4,25 @@ body {
   padding:0;
   color:#000;
   background:#dddddd repeat center top;
-  font:normal 0.9em/150% "Trebuchet MS", arial, verdana, sans-serif;
+  font:normal 14px "Trebuchet MS", arial, verdana, sans-serif;
   text-shadow: 0px 0px 1px transparent; /* google font pixelation fix */
 }
 
-strong {
-  background: #fff; /* counter strange color-choice of kickstart.css */
+.grid .header {
+  font-weight: bold;
+   border: 1px solid black;
+}
+
+#pingMonitor .up {
+  color: white;
+  background: green;
+  text-shadow: 2px 2px 4px #000000;
+}
+
+#pingMonitor .down {
+  color: white;
+  background: red;
+  text-shadow: 2px 2px 4px #000000;
 }
 
 #wrap {
