@@ -22,20 +22,14 @@ function getHostsInformation(){
   console.log(hosts);
 }
 
+// filling in the blanks in the given HTML-structure
 function drawStatusOverview(parent,json){
   // header-item: replace text "pending" with date of JSON-creation
   var header = parent.children(".header").first();
   header.text(header.text().replace("pending", json.date));
 
-  // Uptime
-  /*parent.append('<div class="grid-item">' +
-    '<span class="caption">Uptime: </span>' +
-    '<span class="value">' + json.Uptime + '</span>' +
-    '</div>');*/
-
   // Services
-  var html = '<div><div class="grid-item">' +
-    '<span class="caption">Services: </span><ul>';
+  var html = '<span class="caption">Services: </span><ul>';
 
   $.each( json.Services, function( key, value ) {
     if(value === "running")
@@ -43,29 +37,24 @@ function drawStatusOverview(parent,json){
     else
       html += '<li class="down">' + key + '</li>';
   });
+  parent.find('div.services').first().html(html +'</ul>');
 
-  html = html +'</ul></div>';
-
-  // Load, Uptime, Users
-  html = html +'<div class="grid-item"><ul>' +
+  // Load, Uptime, Users (misc)
+  html = '<ul>' +
     '<li><span class="caption">CPU-Load: </span>' +
     '<span class="value">' + Math.round(json.Load * 100) + '%</span>' +
     '<meter value="' + json.Load + '">' + Math.round(json.Load) +'%</meter></li>' +
+    '<li></br></li>' +
     '<li><span class="caption">Uptime: </span>' +
     '<span class="value">' + json.Uptime + '</span></li>' +
     '<li><span class="caption">Users: </span>' +
     '<span class="value">' + json["Users logged on"] + '</span></li>' +
-    '</ul></div>';
+    '</ul>';
+  parent.find('div.misc').first().html(html);
 
-  // Users
-  /*parent.append('<div class="grid-item">' +
-    '<span class="caption">Users: </span>' +
-    '<span class="value">' + json["Users logged on"] + '</span>' +
-    '</div>');*/
-
-  // CPU-Frequencies
-  html = html + '<div class="grid-item">' +
-    '<span class="caption">CPU-Frequency: </span><ul>' +
+  // CPU-Frequencies (cpufreq)
+  html = '<span class="caption">CPU-Frequency: </span><ul>' +
+      '<li></br></li>' +
       '<li>' +
         '<span class="caption">Cpu 0: </span>' +
         '<span class="value">' + json.cpu0freq/1000 + 'MHz</span>' +
@@ -74,11 +63,12 @@ function drawStatusOverview(parent,json){
         '<span class="caption">Cpu 1: </span>' +
         '<span class="value">' + json.cpu1freq/1000 + 'MHz</span>' +
       '</li>' +
-    '</ul></div>';
+    '</ul>';
+  parent.find('div.cpufreq').first().html(html);
 
-  // Temperatures
-  html = html + '<div class="grid-item">' +
-    '<span class="caption">Temperatures: </span><ul>' +
+  // Temperatures (temperatures)
+  html = '<span class="caption">Temperatures: </span><ul>' +
+      '<li></br></li>' +
       '<li>' +
         '<span class="caption">SoC: </span>' +
         '<span class="value">' + json.cputemp + '</span>' +
@@ -91,11 +81,12 @@ function drawStatusOverview(parent,json){
         '<span class="caption">HDD: </span>' +
         '<span class="value">' + json.hddtemp + '.0°C</span>' +
       '</li>' +
-    '</ul></div>';
+    '</ul>';
+  parent.find('div.temperatures').first().html(html);
 
-  // Voltage and Current
-  html = html + '<div class="grid-item">' +
-    '<span class="caption">Network-Traffic: </span><ul>' +
+  // Voltage and Current (power)
+  html = '<span class="caption">Power: </span><ul>' +
+      '<li></br></li>' +
       '<li>' +
         '<span class="caption">Voltage: </span>' +
         '<span class="value">' + json.voltage/1000000 + 'V</span>' +
@@ -104,11 +95,11 @@ function drawStatusOverview(parent,json){
         '<span class="caption">Current: </span>' +
         '<span class="value">' + json.current/1000000 + 'A</span>' +
       '</li>' +
-    '</ul></div>';
+    '</ul>';
+  parent.find('div.power').first().html(html);
 
-  // SDD
-  html = html + '<div class="grid-item">' +
-    '<span class="caption">SDD: </span><ul>' +
+  // SDD (ssd)
+  html = '<span class="caption">SDD: </span><ul>' +
       '<meter value="' + json.Disk.used.replace("G","") + '" min="0" max="' +
         json.Disk.total.replace("G","") + '"></meter>' +
       '<li>' +
@@ -123,11 +114,11 @@ function drawStatusOverview(parent,json){
         '<span class="caption">Free: </span>' +
         '<span class="value">' + json.Disk.free + 'B</span>' +
       '</li>' +
-    '</ul></div>';
+    '</ul>';
+  parent.find('div.ssd').first().html(html);
 
-  // RAM
-  html = html + '<div class="grid-item">' +
-      '<span class="caption">RAM: </span><ul>' +
+  // RAM (ram)
+  html = '<span class="caption">RAM: </span><ul>' +
         '<meter value="' + (json["Total RAM"] - json["Free RAM"]) + '" min="0" max="' +
           json["Total RAM"] + '"></meter>' +
       '<li>' +
@@ -142,11 +133,12 @@ function drawStatusOverview(parent,json){
         '<span class="caption">Free: </span>' +
         '<span class="value">' + json["Free RAM"] + 'MB</span>' +
       '</li>' +
-    '</ul></div>';
+    '</ul>';
+  parent.find('div.ram').first().html(html);
 
-  // Networktraffic
-  html = html + '<div class="grid-item">' +
-    '<span class="caption">Network-Traffic: </span><ul>' +
+  // Networktraffic (traffic)
+  html = '<span class="caption">Network-Traffic: </span><ul>' +
+      '<li></br></li>' +
       '<li>' +
         '<span class="caption">RX: </span>' +
         '<span class="value">' + addUnitOfTraffic(json.rxbytes) + '</span>' +
@@ -155,9 +147,8 @@ function drawStatusOverview(parent,json){
         '<span class="caption">TX: </span>' +
         '<span class="value">' + addUnitOfTraffic(json.txbytes) + '</span>' +
       '</li>' +
-    '</ul></div>';
-  html = html +"</div>";
-  parent.append(html);
+    '</ul>';
+  parent.find('div.traffic').first().html(html);
 }
 
 

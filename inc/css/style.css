@@ -17,6 +17,14 @@ span.caption {
   font-weight: bold;
 }
 
+#pingMonitor .grid-item {
+  background:#ffffff;
+  border-radius: 0.5em;
+  padding: 5px;
+  margin: 2px;
+  display: inline-block;
+}
+
 #pingMonitor .up, .grid-item .up {
   color: white;
   background: green;
@@ -51,10 +59,12 @@ span.caption {
 
 .grid-item {
   background:#ffffff;
-  border-radius: 0.5em;
+  border: 1px solid black;
+  height: 100%;
+  /*border-radius: 0.5em;
   padding: 5px;
   margin: 2px;
-  display: inline-block;
+  display: inline-block;*/
 }
 
 .grid-item meter {
