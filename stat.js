@@ -91,17 +91,19 @@ function drawStatusOverview(parent,json){
     '</ul></div>';
   parent.append(html);
 
-  // Voltage
-  parent.append('<div class="grid-item">' +
-    '<span class="caption">Voltage: </span>' +
-    '<span class="value">' + json.voltage/1000000 + 'V</span>' +
-    '</div>');
-
-  // Current
-  parent.append('<div class="grid-item">' +
-    '<span class="caption">Current: </span>' +
-    '<span class="value">' + json.current/1000000 + 'A</span>' +
-    '</div>');
+  // Voltage and Current
+  html = '<div class="grid-item">' +
+    '<span class="caption">Network-Traffic: </span><ul>' +
+      '<li>' +
+        '<span class="caption">Voltage: </span>' +
+        '<span class="value">' + json.voltage/1000000 + 'V</span>' +
+      '</li>'+
+      '<li>' +
+        '<span class="caption">Current: </span>' +
+        '<span class="value">' + json.current/1000000 + 'A</span>' +
+      '</li>' +
+    '</ul></div>';
+  parent.append(html);
 
   // SDD
   html = '<div class="grid-item">' +
@@ -152,6 +154,8 @@ function drawStatusOverview(parent,json){
       '</li>' +
     '</ul></div>';
   parent.append(html);
+
+  parent.masonry({itemSelector: '.grid-item', columnHeight: '130px'});
 
 }
 

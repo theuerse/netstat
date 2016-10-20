@@ -108,6 +108,7 @@ function downloadRemoteFile($hostIP,$newFilename){
 
 // Add the file with given $jsonFilename to the history-folder
 function addToHistory($jsonFilename, $json) {
+  global $maxNumberOfHistoryEntries;
   $new_entry = json_decode($json,true);
 
   if(!is_dir("history")){
@@ -490,6 +491,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
   <script type="text/javascript" src="inc/js/jquery-ui.js"></script>
   <script type="text/javascript" src="inc/js/typeahead.js"></script>
   <script type="text/javascript" src="inc/js/bootstrap-tagsinput.js"></script>
+  <script type="text/javascript" src="inc/js/masonry.pkgd.min.js"></script>
   <script type="text/javascript" src="history.js"></script>
   <script type="text/javascript" src="stat.js"></script>
 </head>
@@ -508,17 +510,17 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
         // draw ping-results
         echo '<div id="pingMonitor" class="grid">';
         echo '<div class="grid-item header">Ping monitor (avg ' . $avgPingTime . 'ms)</div>';
-        echo "\n\t\t";
+        echo "<div>\n\t\t";
         foreach ($hostlist as $key => $hostIP) {
           echo getPingResultHtml("$hostIP",80,1);
           echo "\n\t\t";
         }
-        echo "</div>\n\t\t";
+        echo "</div></div>\n\t\t";
 
         // draw individual host-status-stubs
         foreach($hostlist as $key => $hostIP){
             echo '<div id="host' . $hostIP . '" class="grid hoststatus">';
-            echo '<div class="grid-item header">Host: ' . $hostIP . ' (pending)</div>';
+            /*echo '<div class="grid-item header">Host: ' . $hostIP . ' (pending)</div>';*/
             echo "</div>\n\t\t";
         }
         ?>
