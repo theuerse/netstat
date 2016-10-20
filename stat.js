@@ -28,13 +28,13 @@ function drawStatusOverview(parent,json){
   header.text(header.text().replace("pending", json.date));
 
   // Uptime
-  parent.append('<div class="grid-item">' +
+  /*parent.append('<div class="grid-item">' +
     '<span class="caption">Uptime: </span>' +
     '<span class="value">' + json.Uptime + '</span>' +
-    '</div>');
+    '</div>');*/
 
   // Services
-  var html = '<div class="grid-item">' +
+  var html = '<div><div class="grid-item">' +
     '<span class="caption">Services: </span><ul>';
 
   $.each( json.Services, function( key, value ) {
@@ -45,22 +45,26 @@ function drawStatusOverview(parent,json){
   });
 
   html = html +'</ul></div>';
-  parent.append(html);
 
-  // Load
-  parent.append('<div class="grid-item">' +
-    '<span class="caption">CPU-Load: </span>' +
+  // Load, Uptime, Users
+  html = html +'<div class="grid-item"><ul>' +
+    '<li><span class="caption">CPU-Load: </span>' +
     '<span class="value">' + Math.round(json.Load * 100) + '%</span>' +
-    '</div>');
+    '<meter value="' + json.Load + '">' + Math.round(json.Load) +'%</meter></li>' +
+    '<li><span class="caption">Uptime: </span>' +
+    '<span class="value">' + json.Uptime + '</span></li>' +
+    '<li><span class="caption">Users: </span>' +
+    '<span class="value">' + json["Users logged on"] + '</span></li>' +
+    '</ul></div>';
 
   // Users
-  parent.append('<div class="grid-item">' +
+  /*parent.append('<div class="grid-item">' +
     '<span class="caption">Users: </span>' +
     '<span class="value">' + json["Users logged on"] + '</span>' +
-    '</div>');
+    '</div>');*/
 
   // CPU-Frequencies
-  html = '<div class="grid-item">' +
+  html = html + '<div class="grid-item">' +
     '<span class="caption">CPU-Frequency: </span><ul>' +
       '<li>' +
         '<span class="caption">Cpu 0: </span>' +
@@ -71,10 +75,9 @@ function drawStatusOverview(parent,json){
         '<span class="value">' + json.cpu1freq/1000 + 'MHz</span>' +
       '</li>' +
     '</ul></div>';
-  parent.append(html);
 
   // Temperatures
-  html = '<div class="grid-item">' +
+  html = html + '<div class="grid-item">' +
     '<span class="caption">Temperatures: </span><ul>' +
       '<li>' +
         '<span class="caption">SoC: </span>' +
@@ -89,10 +92,9 @@ function drawStatusOverview(parent,json){
         '<span class="value">' + json.hddtemp + '.0°C</span>' +
       '</li>' +
     '</ul></div>';
-  parent.append(html);
 
   // Voltage and Current
-  html = '<div class="grid-item">' +
+  html = html + '<div class="grid-item">' +
     '<span class="caption">Network-Traffic: </span><ul>' +
       '<li>' +
         '<span class="caption">Voltage: </span>' +
@@ -103,11 +105,12 @@ function drawStatusOverview(parent,json){
         '<span class="value">' + json.current/1000000 + 'A</span>' +
       '</li>' +
     '</ul></div>';
-  parent.append(html);
 
   // SDD
-  html = '<div class="grid-item">' +
+  html = html + '<div class="grid-item">' +
     '<span class="caption">SDD: </span><ul>' +
+      '<meter value="' + json.Disk.used.replace("G","") + '" min="0" max="' +
+        json.Disk.total.replace("G","") + '"></meter>' +
       '<li>' +
         '<span class="caption">Total: </span>' +
         '<span class="value">' + json.Disk.total + 'B</span>' +
@@ -121,11 +124,12 @@ function drawStatusOverview(parent,json){
         '<span class="value">' + json.Disk.free + 'B</span>' +
       '</li>' +
     '</ul></div>';
-  parent.append(html);
 
   // RAM
-  html = '<div class="grid-item">' +
-    '<span class="caption">RAM: </span><ul>' +
+  html = html + '<div class="grid-item">' +
+      '<span class="caption">RAM: </span><ul>' +
+        '<meter value="' + (json["Total RAM"] - json["Free RAM"]) + '" min="0" max="' +
+          json["Total RAM"] + '"></meter>' +
       '<li>' +
         '<span class="caption">Total: </span>' +
         '<span class="value">' + json["Total RAM"] + 'MB</span>' +
@@ -139,10 +143,9 @@ function drawStatusOverview(parent,json){
         '<span class="value">' + json["Free RAM"] + 'MB</span>' +
       '</li>' +
     '</ul></div>';
-  parent.append(html);
 
   // Networktraffic
-  html = '<div class="grid-item">' +
+  html = html + '<div class="grid-item">' +
     '<span class="caption">Network-Traffic: </span><ul>' +
       '<li>' +
         '<span class="caption">RX: </span>' +
@@ -153,10 +156,8 @@ function drawStatusOverview(parent,json){
         '<span class="value">' + addUnitOfTraffic(json.txbytes) + '</span>' +
       '</li>' +
     '</ul></div>';
+  html = html +"</div>";
   parent.append(html);
-
-  parent.masonry({itemSelector: '.grid-item', columnHeight: '130px'});
-
 }
 
 

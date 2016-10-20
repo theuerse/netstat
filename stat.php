@@ -520,7 +520,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
         // draw individual host-status-stubs
         foreach($hostlist as $key => $hostIP){
             echo '<div id="host' . $hostIP . '" class="grid hoststatus">';
-            /*echo '<div class="grid-item header">Host: ' . $hostIP . ' (pending)</div>';*/
+            echo '<div class="grid-item header">Host: ' . $hostIP . ' (pending)</div>';
             echo "</div>\n\t\t";
         }
         ?>

@@ -1,5 +1,6 @@
 AddCharset UTF-8 .html .css .php .txt .js .json
 
 <ifmodule mod_deflate.c>
- SetOutputFilter DEFLATE
+  SetOutputFilter DEFLATE
+  SetEnvIfNoCase Request_URI "\.(?:gif|jpe?g|png)$" no-gzip
 </ifmodule>
