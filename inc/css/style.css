@@ -1,4 +1,5 @@
 /* originally Added by Raymii */
+
 body {
   margin:0;
   padding:0;
@@ -10,7 +11,7 @@ body {
 
 .grid .header {
   font-weight: bold;
-   border: 1px solid black;
+  border: 1px solid black;
 }
 
 span.caption {
@@ -51,25 +52,24 @@ span.caption {
 
 .grid {
   background:#dddddd;
-  border-radius: 0.5em;
-  margin-bottom: 5px;
-  padding: 10px;
+  margin-bottom: 10px;
+  padding: 10px 25px 10px 25px;
   box-shadow: inset 0 0 5px 5px #888;
 }
 
 .grid-item {
   background:#ffffff;
-  border: 1px solid black;
   height: 100%;
-  /*border-radius: 0.5em;
-  padding: 5px;
-  margin: 2px;
-  display: inline-block;*/
+}
+
+.grid div.row{
+  background: #ffffff;
 }
 
 .grid-item meter {
   display: block;
-  width: 100%
+  width: 100%;
+  height: 1.15em;
 }
 
 ul {

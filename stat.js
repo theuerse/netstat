@@ -53,7 +53,7 @@ function drawStatusOverview(parent,json){
   parent.find('div.misc').first().html(html);
 
   // CPU-Frequencies (cpufreq)
-  html = '<span class="caption">CPU-Frequency: </span><ul>' +
+  html = '<span class="caption">Frequency: </span><ul>' +
       '<li></br></li>' +
       '<li>' +
         '<span class="caption">Cpu 0: </span>' +
