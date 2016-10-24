@@ -240,7 +240,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
         <?php
         // draw ping-results
         echo '<div id="pingMonitor" class="grid">';
-        echo '<div class="grid-item header">Ping monitor (avg ' . $avgPingTime . 'ms)</div>';
+        echo '<div class="header">Ping monitor (avg ' . $avgPingTime . 'ms)</div>';
         echo "<div>\n\t\t";
         foreach ($hostlist as $key => $hostIP) {
           echo getPingResultHtml("$hostIP",80,1);
