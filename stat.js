@@ -67,7 +67,7 @@ function drawStatusOverview(parent,json){
   parent.find('div.cpufreq').first().html(html);
 
   // Temperatures (temperatures)
-  html = '<span class="caption">Temperatures: </span><ul>' +
+  html = '<span class="caption">Temperature: </span><ul>' +
       '<li></br></li>' +
       '<li>' +
         '<span class="caption">SoC: </span>' +

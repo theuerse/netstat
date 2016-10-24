@@ -25,15 +25,14 @@ Following is the LICENSE-note of the program that served as base for this one:
 //
 // Configuration-Options
 //
-$maxNumberOfHistoryEntries = 5;
+$maxNumberOfHistoryEntries = 168; // 168 hours == 1 week
 
 $hostlist=array(  // jsonFilename => sourceUrl
-  'PI0.json' => '127.0.0.10',
+  'PI0.json' => '127.0.0.10', //TODO: adapt to real network pre-flight
   'PI1.json' => '127.0.0.11',
   'PI2.json' => '127.0.0.12',
   'PI3.json' => '127.0.0.13',
   'PI4.json' => '127.0.0.14',
-
   'PI6.json' => '127.0.0.15',
   'PI7.json' => '127.0.0.16',
   'PI8.json' => '127.0.0.17',
@@ -115,7 +114,8 @@ function addToHistory($jsonFilename, $json) {
     mkdir("history") or die("Cannot create history folder. Create it manually and make sure the webserver can write to it.");
   }
 
-  $history_file=file_get_contents("history/$jsonFilename");
+  $filename = explode(".",$jsonFilename)[0] . "_hist.json";
+  $history_file=file_get_contents("history/$filename");
   if(empty($history_file)){
     $history_file=json_encode(array('history' => [$new_entry]));
   }else{
@@ -126,8 +126,8 @@ function addToHistory($jsonFilename, $json) {
   }
 
   // file_put_contents returns false in case of an exception (else the number of written Bytes)
-  if (file_put_contents("history/${jsonFilename}", $history_file) === false) {
-    exit("File $jsonFilename could not be saved in history. Please check directory permissions on directory \'history\'.");
+  if (file_put_contents("history/${filename}", $history_file) === false) {
+    exit("File $filename could not be saved in history. Please check directory permissions on directory \'history\'.");
   }
 }
 
@@ -191,7 +191,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
   exit("History done.<br /> \n"); // end the script at this point
 }else { // normal call
   foreach ($hostlist as $jsonFilename => $hostIP) {
-  //  downloadRemoteFile($hostIP, $jsonFilename); // get the current json-file
+  //  downloadRemoteFile($hostIP, $jsonFilename); // get the current json-file  //TODO: Uncomment pre-flight
   }
 }
 
@@ -223,7 +223,6 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
   <script type="text/javascript" src="inc/js/jquery-ui.js"></script>
   <script type="text/javascript" src="inc/js/typeahead.js"></script>
   <script type="text/javascript" src="inc/js/bootstrap-tagsinput.js"></script>
-  <script type="text/javascript" src="inc/js/masonry.pkgd.min.js"></script>
   <script type="text/javascript" src="history.js"></script>
   <script type="text/javascript" src="stat.js"></script>
 </head>
