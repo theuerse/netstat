@@ -52,6 +52,18 @@ span.caption {
   padding: 0;
 }
 
+.ui-progressbar {
+  position: relative;
+}
+.progress-label {
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  font-weight: bold;
+  text-shadow: 1px 2px 0 #000;
+  color: #ffffff;
+}
+
 .grid {
   background:#f6f6f6;
   margin-bottom: 10px;

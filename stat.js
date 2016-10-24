@@ -4,7 +4,7 @@
 //
 // Utility-functions
 //
-function getHostsInformation(){
+function getHostStatusInformation(){
   $(".hoststatus").each(function(index){
     var parent = $(this);
     // PI# = last octet of IP-address - 10 (192.168.0.12 -> PI2)
@@ -172,18 +172,49 @@ function addUnitOfTraffic(bytes){
 $(document).ready(function() {
   // hide javaScriptAlert - div, proof that js works
   $(javaScriptAlert).hide();
-  
+
+  getHostStatusInformation();
+
+  // setup progressbar
+  progressbar = $( "#progressbar" );
+  var progressLabel = $( ".progress-label" );
+
+  progressbar.progressbar({
+    value: false,
+    create: function(event, ui) {
+      $(this).find('.ui-widget-header').css({'background-color':'#007FFF'});
+    },
+    complete: function() {
+      progressLabel.text( "Complete!" );
+
+      defaultValues.properties.forEach(function(property){
+        $("#property-selection input[type='text']").eq(2).tagsinput('add', property);
+      });
+
+      setTimeout(function(){
+        progressbar.hide();
+      }, 2000);
+    }
+  });
+  progressbar.hide();
+
   $( "#tabs" ).tabs(
     {
       // remember last selected Tab
       active: localStorage.getItem("currentTabIndex"),
       activate: function(event, ui) {
         localStorage.setItem("currentTabIndex", ui.newPanel[0].dataset.tabIndex);
+        if(ui.newPanel[0].dataset.tabIndex == 1){
+          // tabindex == 1 ->historyTab active
+          if(progressbar.progressbar("value") < 100){
+            console.log("load history-info (tabchange)");
+            getHostHistoryInformation();
+          }
+
+        }
       }
     }
   );
-
-  getHostsInformation();
 
   setupSortableDivs();
 
@@ -193,5 +224,9 @@ $(document).ready(function() {
   setupPropertyDialog();
   setupPropertySelection();
 
-  setupDefaultValues();
+  if(localStorage.getItem("currentTabIndex") == 1){
+    // load history-info (default-files)
+    console.log("load history-info (default-history-tab)");
+    getHostHistoryInformation();
+  }
   });

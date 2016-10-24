@@ -16,6 +16,7 @@ var dateRange = [];
 
 var graphInformation = {}; // caches graph info before drawing
 var charts = {}; // holds references to drawn charts
+var progressbar;
 
 
 function setupSortableDivs(){
@@ -155,12 +156,6 @@ function setupHostSelection(){
     if(! jsonData.hasOwnProperty(hostname)){
       $.getJSON("history/" + hostname + "_hist.json").done(function(json){
         integrateJsonData(hostname, json);
-
-        // update existing charts (wait for data)
-        for(var propertyName in charts) {
-          charts[propertyName].load({columns:[[hostname].concat(jsonData[hostname][propertyName])]});
-        }
-
       })
       .fail(function( jqxhr, textStatus, error ) {
         var err = textStatus + ", " + error;
@@ -376,24 +371,19 @@ function integrateJsonData(hostname, json){
 
   jsonData[hostname] = data;
   console.log(hostname + " integrated");
+  // hosts.length+1 ... compensate x-property present in jsonData
+  progressbar.progressbar( "value", (Object.keys(jsonData).length / (hosts.length+1))*100);
 }
 
-function setupDefaultValues(){
-  /*defaultValues.hosts.forEach(function(host){
+function getHostHistoryInformation(){
+  // start displaying progress indicator
+  progressbar.show();
+
+  // for host in hosts, request history_file
+  hosts.forEach(function(host){
     $("#host-selection input[type='text']").eq(2).tagsinput('add', host);
-  });*/
+  });
 
-  drawChartsIfHostDataAvailable();
-}
-
-// periodically check if all default-host-data has been downloaded and integrated
-function drawChartsIfHostDataAvailable() {
-  if(hosts.every(function(host){
-    return $.inArray(host,Object.keys(jsonData)) != -1;
-  })){
-    defaultValues.properties.forEach(function(property){
-      $("#property-selection input[type='text']").eq(2).tagsinput('add', property);
-    });
-  }
-  else { setTimeout(drawChartsIfHostDataAvailable, 50);}
+  // progress is updated when a file has been downloaded and integrated
+  // progress 100% -> hide progressbar and display default-charts
 }
