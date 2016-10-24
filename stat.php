@@ -158,7 +158,7 @@ function pingHosts(){
     }
   }
   if($successfullPings > 0)
-    $avgPingTime = $avgPingTime / $successfullPings;
+    $avgPingTime = round($avgPingTime / $successfullPings, 2);
 }
 
 // Pings a given $host and prints the result
