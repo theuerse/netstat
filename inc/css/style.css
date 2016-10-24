@@ -12,7 +12,7 @@ body {
 .grid .header {
   font-weight: bold;
   background-color: #cccccc;
-  border: 1px solid black;
+  border: 1px solid #cccccc;
   padding: 0px;
 }
 
