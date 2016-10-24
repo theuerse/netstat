@@ -60,12 +60,12 @@ span.caption {
 }
 
 .grid-item {
-  background:#ffffff;
+  background:#f6f6f6;
   height: 100%;
 }
 
 .grid div.row{
-  background: #ffffff;
+  background: #f6f6f6;
 }
 
 .grid-item meter {
