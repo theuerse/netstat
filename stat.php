@@ -228,6 +228,9 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 </head>
 
 <body>
+  <div id="javaScriptAlert"class="alert alert-danger" role="alert">
+  This Page needs JavaScript in order to work, please enable it.
+  </div>
   <a id="top-of-page"></a>
   <div id="wrap" class="clearfix">
     <div id="tabs">

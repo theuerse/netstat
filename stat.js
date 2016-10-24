@@ -170,6 +170,9 @@ function addUnitOfTraffic(bytes){
 // main entry point of js
 //
 $(document).ready(function() {
+  // hide javaScriptAlert - div, proof that js works
+  $(javaScriptAlert).hide();
+  
   $( "#tabs" ).tabs(
     {
       // remember last selected Tab
