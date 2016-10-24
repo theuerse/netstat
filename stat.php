@@ -145,13 +145,14 @@ function ping($hostIP,$port,$timeout){
 function pingHosts(){
   global $hostlist;
   global $pingResults;
-  $avgPingTime = 0;
+  global $avgPingTime;
   $successfullPings = 0;
+  $avgPingTime = 0;
 
   foreach ($hostlist as $jsonFilename => $hostIP) {
     $pingResults[$hostIP] = ping($hostIP,80,0.1);
     $rtt = $pingResults[$hostIP];
-    if(rtt > -1){
+    if($rtt > -1){
       $avgPingTime += $rtt;
       $successfullPings += 1;
     }
