@@ -19,10 +19,6 @@ var charts = {}; // holds references to drawn charts
 var progressbar;
 
 
-function setupSortableDivs(){
-  $( "#sortable" ).sortable();
-  //$( "#sortable" ).disableSelection();
-}
 
 function setupPropertySelection(){
   var citynames = new Bloodhound({
@@ -64,7 +60,8 @@ function setupPropertySelection(){
       $("#sortable").append('<li id="p_' + propertyName +'" class="ui-state-default">' +
       '<div><p class="propertyTitle">' +  propertyName +" "+ units[propertyName] + '</p><div id="chart_' + propertyName +'"></div></div></li>');
 
-      setupSortableDivs();
+      // setup sortable divs
+      $( "#sortable" ).sortable();
 
       $("#chk_" + propertyName).prop('checked', true);
       $("#chk_" + propertyName).button( "refresh" );
@@ -270,8 +267,6 @@ function setupChart(propertyName){
         max: dateRange[1],
         tick: {
           format: '%d.%m.%Y %H:%M:%S',
-          //values: []
-          //values: [jsonData.x[0], jsonData.x[jsonData.x.length-1]]
         }
       },
       y: {

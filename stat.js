@@ -192,6 +192,10 @@ $(document).ready(function() {
       });
 
       setTimeout(function(){
+        // update existing charts to ensure, that the charts are within bounds
+        for(var propertyName in charts) {
+          charts[propertyName].axis.range({min: {x: dateRange[0]}});
+        }
         progressbar.hide();
       }, 2000);
     }
@@ -216,7 +220,8 @@ $(document).ready(function() {
     }
   );
 
-  setupSortableDivs();
+  // setup sortable divs
+  $( "#sortable" ).sortable();
 
   setupHostDialog();
   setupHostSelection();

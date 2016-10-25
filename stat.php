@@ -283,18 +283,18 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
       </div>
       <!-- History -->
       <div id="tab-history" class="tab-content" data-tab-index="1">
-        <div id="property-selection">
-          <table>
-            <tr>
-              <td><button id="propertyBtn" class="tagsBtn"><i class="fa fa-cog" aria-hidden="true"></i></button></td>
-              <td><input type="text" data-role="tagsinput"/></td>
-            </tr>
-          </table>
-        </div>
         <div id="host-selection">
           <table>
             <tr>
               <td><button id="hostBtn" class="tagsBtn"><i class="fa fa-cog" aria-hidden="true"></i></button></td>
+              <td><input type="text" data-role="tagsinput"/></td>
+            </tr>
+          </table>
+        </div>
+        <div id="property-selection">
+          <table>
+            <tr>
+              <td><button id="propertyBtn" class="tagsBtn"><i class="fa fa-cog" aria-hidden="true"></i></button></td>
               <td><input type="text" data-role="tagsinput"/></td>
             </tr>
           </table>
