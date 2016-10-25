@@ -69,10 +69,14 @@ span.caption {
   margin: 5px 15px 5px 15px;
 }
 
+.paperLikeShadow {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
 .grid {
   background:#f6f6f6;
   margin-bottom: 15px;
-  border: 1px solid #cccccc;
+  border: 1px solid #A2A2A2;
 }
 
 .grid-item {
@@ -172,5 +176,5 @@ p.propertyTitle {
 td {background-color: white;}
 .tagsBtn {margin: 0px; width: 100%; height: 100%;}
 
-.ui-sortable > li {margin-top: 5px;}
+.ui-sortable > li {margin-top: 15px;}
 .propertyTitle {padding-left: 0.5em; background-color: #CCCCCC;}

@@ -58,7 +58,7 @@ function setupPropertySelection(){
     }
     else{
       $("#sortable").append('<li id="p_' + propertyName +'" class="ui-state-default">' +
-      '<div><p class="propertyTitle">' +  propertyName +" "+ units[propertyName] + '</p><div id="chart_' + propertyName +'"></div></div></li>');
+      '<div class="paperLikeShadow"><p class="propertyTitle">' +  propertyName +" "+ units[propertyName] + '</p><div id="chart_' + propertyName +'"></div></div></li>');
 
       // setup sortable divs
       $( "#sortable" ).sortable();

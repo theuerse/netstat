@@ -243,7 +243,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
       <div id="tab-status" class="tab-content" data-tab-index="0">
         <?php
         // draw ping-results
-        echo '<div id="pingMonitor" class="grid">';
+        echo '<div id="pingMonitor" class="grid paperLikeShadow">';
         echo '<div class="header">Ping monitor (avg ' . $avgPingTime . 'ms)</div>';
         echo "<div class='spacedContainer'>\n\t\t";
         foreach ($hostlist as $key => $hostIP) {
@@ -254,7 +254,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
 
         // draw individual host-status-stubs
         foreach($hostlist as $key => $hostIP){
-            echo '<div id="host' . $hostIP . '" class="grid hoststatus">';
+            echo '<div id="host' . $hostIP . '" class="grid hoststatus paperLikeShadow">';
             echo '<div class="grid-item header">Host: ' . $hostIP . ' (pending)</div>';
               echo '<div class="spacedContainer">';
                 echo '<div class="row">';
