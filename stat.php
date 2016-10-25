@@ -245,7 +245,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
         // draw ping-results
         echo '<div id="pingMonitor" class="grid">';
         echo '<div class="header">Ping monitor (avg ' . $avgPingTime . 'ms)</div>';
-        echo "<div>\n\t\t";
+        echo "<div class='spacedContainer'>\n\t\t";
         foreach ($hostlist as $key => $hostIP) {
           echo getPingResultHtml("$hostIP",80,1);
           echo "\n\t\t";
@@ -256,26 +256,26 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
         foreach($hostlist as $key => $hostIP){
             echo '<div id="host' . $hostIP . '" class="grid hoststatus">';
             echo '<div class="grid-item header">Host: ' . $hostIP . ' (pending)</div>';
-              echo '<div class="row">';
+              echo '<div class="spacedContainer">';
+                echo '<div class="row">';
+                  echo '<div class="col-md-6">';
+                    echo '<div class="row">';
+                      echo '<div class="col-md-3 grid-item services"></div>';
+                      echo '<div class="col-md-3 grid-item misc"></div>';
+                      echo '<div class="col-md-3 grid-item cpufreq"></div>';
+                      echo '<div class="col-md-3 grid-item temperatures"></div>';
+                      echo '</div>';
+                      echo '</div>';
 
-                echo '<div class="col-md-6">';
-                  echo '<div class="row">';
-                    echo '<div class="col-md-3 grid-item services"></div>';
-                    echo '<div class="col-md-3 grid-item misc"></div>';
-                    echo '<div class="col-md-3 grid-item cpufreq"></div>';
-                    echo '<div class="col-md-3 grid-item temperatures"></div>';
-                  echo '</div>';
-                echo '</div>';
-
-                echo '<div class="col-md-6">';
-                  echo '<div class="row">';
+                  echo '<div class="col-md-6">';
+                    echo '<div class="row">';
                     echo '<div class="col-md-3 grid-item power"></div>';
                     echo '<div class="col-md-3 grid-item ssd"></div>';
                     echo '<div class="col-md-3 grid-item ram"></div>';
                     echo '<div class="col-md-3 grid-item traffic"></div>';
                   echo '</div>';
                 echo '</div>';
-
+                echo '</div>';
               echo '</div>';
             echo "</div>\n\t\t";
         }
