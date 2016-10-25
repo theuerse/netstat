@@ -54,7 +54,6 @@ function setupPropertySelection(){
     var propertyName = event.item;
     if($("#p_" + propertyName).length){
       $("#p_" + propertyName).show();
-      console.log(propertyName + " shown");
     }
     else{
       $("#sortable").append('<li id="p_' + propertyName +'" class="ui-state-default">' +
@@ -67,10 +66,8 @@ function setupPropertySelection(){
       $("#chk_" + propertyName).button( "refresh" );
 
       setupChart(propertyName);
-
-      console.log(propertyName + " added");
     }
-
+    $.notify({title: "<strong>" + propertyName + "</strong>", message: ": Graph added"},{newest_on_top: true, type: 'success'});
   });
 
   $("#property-selection input[type='text']" ).eq(2).on('itemRemoved', function(event) {
@@ -78,7 +75,8 @@ function setupPropertySelection(){
       $("#p_" + event.item).hide();
       $("#chk_" + event.item).prop('checked', false);
       $("#chk_" + event.item).button( "refresh" );
-      console.log(event.item + " removed");
+
+      $.notify({title: "<strong>" + event.item + "</strong>", message: ": Graph removed"},{newest_on_top: true, type: 'danger'});
     }
   });
 

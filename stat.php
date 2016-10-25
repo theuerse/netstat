@@ -223,6 +223,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
   <script type="text/javascript" src="inc/js/jquery-ui.js"></script>
   <script type="text/javascript" src="inc/js/typeahead.js"></script>
   <script type="text/javascript" src="inc/js/bootstrap-tagsinput.js"></script>
+  <script type="text/javascript" src="inc/js/bootstrap-notify.min.js"></script>
   <script type="text/javascript" src="history.js"></script>
   <script type="text/javascript" src="stat.js"></script>
 </head>
