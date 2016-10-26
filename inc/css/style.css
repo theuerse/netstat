@@ -111,7 +111,36 @@ p.propertyTitle {
 }
 
 .bootstrap-tagsinput {
-    width: 100%;
+    width: 96%;
+    display: inline-block;
+}
+
+#host-selection > div.bootstrap-tagsinput, #property-selection > div.bootstrap-tagsinput {
+  width: 100%;
+}
+
+#host-selection .label-info, #property-selection .label-info {
+  background-color: #a8a5a5;
+  text-shadow: 2px 2px 4px #000000;
+  font-size: 1em;
+  display: inline-block;
+}
+
+#date-range-selection label {
+  background-color: #a8a5a5;
+  color: #ffffff;
+  border-radius: 4px;
+  text-shadow: 2px 2px 4px #000000;
+  padding: 5px;
+  margin: 0;
+}
+
+.subcontainer {
+  display: inline-block;
+  padding: 4px 6px;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
 }
 
 .accordion {
@@ -173,7 +202,7 @@ p.propertyTitle {
 }
 
 td {background-color: white;}
-.tagsBtn {margin: 0px; width: 100%; height: 100%;}
+.tagsBtn {margin: 0px; width: 4%; display: inline-block; height: 100%;}
 
 .ui-sortable > li {margin-top: 15px;}
 .propertyTitle {padding-left: 0.5em; background-color: #CCCCCC;}
@@ -181,4 +210,10 @@ td {background-color: white;}
 #datefrom, #dateto {
   width: 8em;
   text-align: center;
+}
+
+#history-controls {
+  padding: 2px;
+  background-color: #f6f6f6;
+  border: 1px solid #a2a2a2;
 }

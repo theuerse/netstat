@@ -70,7 +70,7 @@ function setupPropertySelection(){
     $.notify({title: "<strong>" + propertyName + "</strong>", message: ": Graph added"},{newest_on_top: true, type: 'success'});
   });
 
-  $("#property-selection input[type='text']" ).eq(2).on('itemRemoved', function(event) {
+  $("#property-selection input[type='text']").eq(2).on('itemRemoved', function(event) {
     if($("#p_" + event.item).length){
       $("#p_" + event.item).hide();
       $("#chk_" + event.item).prop('checked', false);
@@ -80,6 +80,8 @@ function setupPropertySelection(){
     }
   });
 
+  $("#property-selection div.bootstrap-tagsinput").first().append(
+    '<button id="propertyBtn" class="tagsBtn"><i class="fa fa-cog" aria-hidden="true"></i></button>');
 
   $("#propertyBtn").button().on( "click", function() {
     propertyDialog.dialog( "open" );
@@ -178,6 +180,8 @@ function setupHostSelection(){
     console.log(hostname + " removed");
   });
 
+  $("#host-selection div.bootstrap-tagsinput").first().append(
+    '<button id="hostBtn" class="tagsBtn"><i class="fa fa-cog" aria-hidden="true"></i></button>');
 
   $("#hostBtn").button().on( "click", function() {
     hostDialog.dialog( "open" );
