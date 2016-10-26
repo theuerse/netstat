@@ -67,7 +67,16 @@ function setupPropertySelection(){
 
       setupChart(propertyName);
     }
-    $.notify({title: "<strong>" + propertyName + "</strong>", message: ": Graph added"},{newest_on_top: true, type: 'success'});
+    $.notify({title: "<strong>" + propertyName + "</strong>", message: ": Graph added"},
+      {
+        placement: {from: "bottom", align: "right"},
+        newest_on_top: true,
+        animate: {
+          enter: 'animated fadeInDown',
+          exit: 'animated fadeOutUp'
+        },
+        type: 'success'
+      });
   });
 
   $("#property-selection input[type='text']").eq(2).on('itemRemoved', function(event) {
@@ -76,7 +85,16 @@ function setupPropertySelection(){
       $("#chk_" + event.item).prop('checked', false);
       $("#chk_" + event.item).button( "refresh" );
 
-      $.notify({title: "<strong>" + event.item + "</strong>", message: ": Graph removed"},{newest_on_top: true, type: 'danger'});
+      $.notify({title: "<strong>" + event.item + "</strong>", message: ": Graph removed"},
+        {
+          placement: {from: "bottom", align: "right"},
+          newest_on_top: true,
+          animate: {
+            enter: 'animated fadeInDown',
+            exit: 'animated fadeOutUp'
+          },
+          type: 'danger'
+        });
     }
   });
 
