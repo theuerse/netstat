@@ -129,6 +129,11 @@ function addToHistory($jsonFilename, $json) {
   if (file_put_contents("history/${filename}", $history_file) === false) {
     exit("File $filename could not be saved in history. Please check directory permissions on directory \'history\'.");
   }
+
+  // save gz-compressed history to be served directly
+  //if (file_put_contents("history/${filename}.gz", gzencode($history_file)) === false) {
+  //  exit("File $filename.gz could not be saved in history. Please check directory permissions on directory \'history\'.");
+  //}
 }
 
 // returns the roundtriptime in [ms] if reachable or else -1
