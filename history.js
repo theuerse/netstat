@@ -168,7 +168,7 @@ function setupHostSelection(){
     $("#chk_" + hostname).prop('checked', true);
     $("#chk_" + hostname).button( "refresh" );
     if(! jsonData.hasOwnProperty(hostname)){
-      $.getJSON("history/" + hostname + "_hist.json").done(function(json){
+      $.getJSON("history/gzip/" + hostname + "_hist.json").done(function(json){
         integrateJsonData(hostname, json);
       })
       .fail(function( jqxhr, textStatus, error ) {
