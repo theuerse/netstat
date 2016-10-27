@@ -1,10 +1,11 @@
 var properties = ["current", "voltage", "cputemp", "hddtemp", "pmutemp", "cpu0freq",
-"cpu1freq","txbytes","rxbytes","Free_RAM","Uptime","Users_logged_on","Load"];
+"cpu1freq","txbytes","rxbytes","Free_RAM","Uptime","Load"];
 
 var hosts = [];
 
 var units = {"current": "[A]", "voltage": "[V]", "cputemp": "[°C]", "hddtemp" : "[°C]",
-"pmutemp": "[°C]", "cpu0freq": "[MHz]","cpu1freq": "[MHz]","txbytes": "MB","rxbytes": "MB","Free_RAM": "MB","Uptime":"","Users_logged_on":"","Load":"[%]" };
+"pmutemp": "[°C]", "cpu0freq": "[MHz]","cpu1freq": "[MHz]","txbytes": "[MB]",
+"rxbytes": "[MB]","Free_RAM": "[MB]","Uptime":"[D]","Load":"[%]" };
 
 var defaultValues = {
   properties: ["voltage", "current", "cputemp", "pmutemp", "hddtemp"]
@@ -119,7 +120,6 @@ function setupPropertyDialog(){
   $("#dialog-properties .chkbox").bind('change', function(){
     if($(this).is(':checked')){
       $("#property-selection input[type='text']").eq(2).tagsinput('add', $(this).attr('value'),{preventPost: true});
-      console.log("adding tag" + $(this).attr('value'));
     }else{
 
       $("#property-selection input[type='text']").eq(2).tagsinput('remove', $(this).attr('value'));
@@ -181,7 +181,6 @@ function setupHostSelection(){
         charts[propertyName].show([hostname],{withLegend: true});
       }
     }
-    console.log(hostname + " added");
   });
 
   $("#host-selection input[type='text']" ).eq(2).on('itemRemoved', function(event) {
@@ -193,7 +192,6 @@ function setupHostSelection(){
     for(var propertyName in charts) {
       charts[propertyName].hide([hostname],{withLegend: true});
     }
-    console.log(hostname + " removed");
   });
 
   $("#host-selection div.bootstrap-tagsinput").first().append(
@@ -203,25 +201,6 @@ function setupHostSelection(){
     hostDialog.dialog( "open" );
   });
 
-}
-
-function conformJsonValue(propertyName, value){
-  switch(propertyName){
-    case "voltage":
-    case "current":
-    return value / 1000000;
-    case "cpu0freq":
-    case "cpu1freq":
-    return value / 1000;
-    case "cputemp":
-    case "pmutemp":
-    return value.replace("°C","");
-    case "txbytes":
-    case "rxbytes":
-    return value / 1000000;
-    default:
-    return value;
-  }
 }
 
 function setupHostDialog(){
@@ -236,7 +215,6 @@ function setupHostDialog(){
   $("#dialog-host .chkbox").bind('change', function(){
     if($(this).is(':checked')){
       $("#host-selection input[type='text']").eq(2).tagsinput('add', $(this).attr('value'),{preventPost: true});
-      console.log("adding tag" + $(this).attr('value'));
     }else{
 
       $("#host-selection input[type='text']").eq(2).tagsinput('remove', $(this).attr('value'));
@@ -254,11 +232,9 @@ function setupHostDialog(){
 
 function setupChart(propertyName){
   columns = [['x'].concat(jsonData.x)];
-  console.log("setting up chart for " + propertyName);
   $("#host-selection input[type='text']").eq(2).tagsinput('items').forEach(function(hostname){
-    console.log("adding data from " + hostname);
     if(jsonData.hasOwnProperty(hostname)){
-      columns.push([hostname].concat(jsonData[hostname][propertyName]));
+      columns.push([hostname].concat(jsonData[hostname][propertyName.replace(/\_/g, ' ')]));
     }
   });
 
@@ -377,13 +353,14 @@ function integrateJsonData(hostname, json){
 
     data.hddtemp.push(histEntry.hddtemp);
     data["Free RAM"].push(histEntry["Free RAM"]);
-    data.Uptime.push(histEntry.Uptime);
-    data["Users logged on"].push(histEntry["Users logged on"]);
+
+    var parts = histEntry.Uptime.split(" "); //parts[0]...value, parts[1]...unit
+    data.Uptime.push((parts[1] == "days") ? parts[0] : 0);
+
     data.Load.push(histEntry.Load);
   });
 
   jsonData[hostname] = data;
-  console.log(hostname + " integrated");
   // hosts.length+1 ... compensate x-property present in jsonData
   progressbar.progressbar( "value", (Object.keys(jsonData).length / (hosts.length+1))*100);
 }

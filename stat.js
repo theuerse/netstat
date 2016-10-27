@@ -19,7 +19,6 @@ function getHostStatusInformation(){
       console.log( "Request Failed: " + err );
     });
   });
-  console.log(hosts);
 }
 
 // filling in the blanks in the given HTML-structure
@@ -211,7 +210,6 @@ $(document).ready(function() {
         if(ui.newPanel[0].dataset.tabIndex == 1){
           // tabindex == 1 ->historyTab active
           if(progressbar.progressbar("value") < 100){
-            console.log("load history-info (tabchange)");
             getHostHistoryInformation();
           }
 
@@ -231,7 +229,6 @@ $(document).ready(function() {
 
   if(localStorage.getItem("currentTabIndex") == 1){
     // load history-info (default-files)
-    console.log("load history-info (default-history-tab)");
     getHostHistoryInformation();
   }
   });
