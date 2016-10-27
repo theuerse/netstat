@@ -220,7 +220,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
   <link rel="stylesheet" type="text/css" href="inc/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="inc/css/bootstrap-theme.min.css">
   <link rel="stylesheet" type="text/css" href="inc/css/bootstrap-tagsinput.css">
-  <link rel="stylesheet" type="text/css" href="inc/css/style.css" media="all" />
+  <link rel="stylesheet" type="text/css" href="style.css" media="all" />
   <!-- JavaScript -->
   <script type="text/javascript" src="inc/js/d3.js"></script>
   <script type="text/javascript" src="inc/js/c3.js"></script>

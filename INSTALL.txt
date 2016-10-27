@@ -3,21 +3,30 @@ A webserver with PHP (>= 5.2) and the PHP-option 'allow_url_fopen' set to 1 (all
 
 Install:
 After cloning the source-files to e.g. the document-root of your webserver, you need to create
-a history-folder (e.g. [sudo] mkdir history) inside the source-directory, make the source-directory and the
+a history-folder and a subfolder for gzip'ed history-files (e.g. [sudo] mkdir history, [sudo] mkdir history/gzip) inside the source-directory, make the source-directory and the
 history-subdirectory writable by the webserver (e.g. user 'www-data' when using apache)
-and set up two jobs (e.g. cronjobs) in order to enable the maintenance of a history of status-JSON-files.
+and set up a job (e.g. cronjob) in order to enable the maintenance of a history of status-JSON-files.
 
 Giving the webserver permission to write in the source-directory:
 # ’outside’ the source-directory
 sudo chown -R www-data:www-data netstat
 
+Enable the following Apache-modules in order to allow for the webserver to offer pre-compressed
+history-files:
+
+sudo a2enmod rewrite
+sudo a2enmod headers
+sudo a2enmod deflate
+sudo service apache2 reboot
+
+Additionally you may have to edit your apache-config file (e.g. /etc/apache/apache.conf),
+allowing "AllowOverride All" for .htaccess-files in the directory containing netstat.
 
 
 Examples for using cron:
 Open the crontab-editor using 'sudo crontab -e' (to run commands with administrative privileges).
 
-Add following lines:
-0 * * * * find /var/www/html/netstat/history -type f -mtime +1 -delete
+Add following line: (replace 143.25.22.89 with the IP of your gateway-server or use "localhost")
 15 * * * * wget -qO /dev/null "http://143.25.22.89/netstat/stat.php?action=save&key=8A29691737D"
 
 Don't forget to save your changes.
