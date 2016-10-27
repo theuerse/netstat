@@ -21,25 +21,25 @@ var progressbar;
 
 
 function setupPropertySelection(){
-  var citynames = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-    queryTokenizer: Bloodhound.tokenizers.whitespace,
-    prefetch: {
-      url: 'propertynames.json',
-      filter: function(list) {
-        return $.map(list, function(cityname) {
-          return { name: cityname }; });
-        }
-      }
+
+  var propertyList = [];
+  properties.forEach(function(property){
+    propertyList.push({name: property});
+  });
+
+  var propertyNames = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      local: propertyList
     });
-  citynames.initialize();
+  propertyNames.initialize();
 
   $( "#property-selection input[type='text']" ).tagsinput({
     typeaheadjs: {
       name: 'propertynames',
       displayKey: 'name',
       valueKey: 'name',
-      source: citynames.ttAdapter()
+      source: propertyNames.ttAdapter()
     }
   });
 
@@ -136,25 +136,24 @@ function setupPropertyDialog(){
 }
 
 function setupHostSelection(){
-  var hostnames = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-    queryTokenizer: Bloodhound.tokenizers.whitespace,
-    prefetch: {
-      url: 'hostnames.json',
-      filter: function(list) {
-        return $.map(list, function(hostname) {
-          return { name: hostname }; });
-        }
-      }
+  var hostList = [];
+  hosts.forEach(function(property){
+    hostList.push({name: property});
+  });
+
+  var hostNames = new Bloodhound({
+      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      local: hostList
     });
-  hostnames.initialize();
+  hostNames.initialize();
 
   $( "#host-selection input[type='text']" ).tagsinput({
     typeaheadjs: {
-      name: 'hostnames',
+      name: 'hostNames',
       displayKey: 'name',
       valueKey: 'name',
-      source: hostnames.ttAdapter()
+      source: hostNames.ttAdapter()
     }
   });
 
@@ -192,7 +191,6 @@ function setupHostSelection(){
 
     // update existing charts
     for(var propertyName in charts) {
-      //charts[propertyName].unload({ids: [hostname]});
       charts[propertyName].hide([hostname],{withLegend: true});
     }
     console.log(hostname + " removed");
