@@ -41,11 +41,10 @@ span.caption {
 }
 
 #wrap {
-  width:95%;/*960*/
+  width:95%;
   background:#dddddd;
   margin:30px auto 30px auto;
   border: 0px;
-  /*border:1px solid #ccc;*/
 }
 #tabs {
   border: 0px;

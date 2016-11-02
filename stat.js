@@ -150,7 +150,7 @@ function drawStatusOverview(parent,json){
   parent.find('div.traffic').first().html(html);
 }
 
-
+// returns the correct SI-unit for a given number of Bytes
 function addUnitOfTraffic(bytes){
   var traffic = Math.round(((bytes / 1024) / 1024));
   if (traffic < 1024) {
@@ -228,7 +228,6 @@ $(document).ready(function() {
   setupPropertySelection();
 
   if(localStorage.getItem("currentTabIndex") == 1){
-    // load history-info (default-files)
     getHostHistoryInformation();
   }
   });

@@ -27,27 +27,28 @@ Following is the LICENSE-note of the program that served as base for this one:
 //
 $maxNumberOfHistoryEntries = 168; // 168 hours == 1 week
 
+//TODO: adapt to your own network
 $hostlist=array(  // jsonFilename => sourceUrl
-  'PI0.json' => '127.0.0.10', //TODO: adapt to real network pre-flight
-  'PI1.json' => '127.0.0.11',
-  'PI2.json' => '127.0.0.12',
-  'PI3.json' => '127.0.0.13',
-  'PI4.json' => '127.0.0.14',
-  'PI6.json' => '127.0.0.15',
-  'PI7.json' => '127.0.0.16',
-  'PI8.json' => '127.0.0.17',
-  'PI9.json' => '127.0.0.18',
-  'PI10.json' => '127.0.0.19',
-  'PI5.json' => '127.0.0.20',
-  'PI11.json' => '127.0.0.21',
-  'PI12.json' => '127.0.0.22',
-  'PI13.json' => '127.0.0.23',
-  'PI14.json' => '127.0.0.24',
-  'PI15.json' => '127.0.0.25',
-  'PI16.json' => '127.0.0.26',
-  'PI17.json' => '127.0.0.27',
-  'PI18.json' => '127.0.0.28',
-  'PI19.json' => '127.0.0.29'
+  'PI0.json' => '192.168.0.10',
+  'PI1.json' => '192.168.0.11',
+  'PI2.json' => '192.168.0.12',
+  'PI3.json' => '192.168.0.13',
+  'PI4.json' => '192.168.0.14',
+  'PI5.json' => '192.168.0.15',
+  'PI6.json' => '192.168.0.16',
+  'PI7.json' => '192.168.0.17',
+  'PI8.json' => '192.168.0.18',
+  'PI9.json' => '192.168.0.19',
+  'PI10.json' => '192.168.0.20',
+  'PI11.json' => '192.168.0.21',
+  'PI12.json' => '192.168.0.22',
+  'PI13.json' => '192.168.0.23',
+  'PI14.json' => '192.168.0.24',
+  'PI15.json' => '192.168.0.25',
+  'PI16.json' => '192.168.0.26',
+  'PI17.json' => '192.168.0.27',
+  'PI18.json' => '192.168.0.28',
+  'PI19.json' => '192.168.0.29'
 );
 
 // path to a JSON-file on respective hosts
@@ -55,18 +56,21 @@ $hostlist=array(  // jsonFilename => sourceUrl
 // of the webservers on the repective hosts
 $jsonFilePath = 'stat.json';
 
-// hostIP => rtt[ms]
-$pingResults = array();
-$avgPingTime = 0;
-
 ## Set this to "secure" the history saving. This key has to be given as a parameter to save the history.
 $historykey = "8A29691737D";
 
-#Set this or your logs will fill up your disk. // TODO: REALLY?
+// default timezone
 date_default_timezone_set('Europe/Vienna');
 
+
+//
+// Other global variables
+//
 $historyFiles = array(); // global array for storing the name of all files in the history-folder
 
+// hostIP => rtt[ms]
+$pingResults = array();
+$avgPingTime = 0;
 
 
 //
@@ -196,7 +200,7 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
   exit("History done.<br /> \n"); // end the script at this point
 }else { // normal call
   foreach ($hostlist as $jsonFilename => $hostIP) {
-  //  downloadRemoteFile($hostIP, $jsonFilename); // get the current json-file  //TODO: Uncomment pre-flight
+    downloadRemoteFile($hostIP, $jsonFilename); // get the current json-file
   }
 }
 

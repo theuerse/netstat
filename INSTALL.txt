@@ -3,13 +3,22 @@ A webserver with PHP (>= 5.2) and the PHP-option 'allow_url_fopen' set to 1 (all
 
 Install:
 After cloning the source-files to e.g. the document-root of your webserver, you need to create
-a history-folder and a subfolder for gzip'ed history-files (e.g. [sudo] mkdir history, [sudo] mkdir history/gzip) inside the source-directory, make the source-directory and the
-history-subdirectory writable by the webserver (e.g. user 'www-data' when using apache)
-and set up a job (e.g. cronjob) in order to enable the maintenance of a history of status-JSON-files.
+a history-folder and a subfolder for gzip'ed history-files.
+
+cd netstat
+sudo mkdir history && sudo mkdir history/gzip
+
+Inside the source-directory make the source-directory and the history-subdirectory writable by
+the webserver (e.g. user 'www-data' when using apache)and set up a job (e.g. cronjob)
+in order to enable the maintenance of a history of status-JSON-files.
 
 Giving the webserver permission to write in the source-directory:
+At least the .json-Files (PI0.json, PI1.json, ...) in the source directory, and the subdirectories history and history/gzip
+must be writable by the webserver.
+
 # ’outside’ the source-directory
 sudo chown -R www-data:www-data netstat
+
 
 Enable the following Apache-modules in order to allow for the webserver to offer pre-compressed
 history-files:
@@ -23,7 +32,7 @@ Additionally you may have to edit your apache-config file (e.g. /etc/apache/apac
 allowing "AllowOverride All" for .htaccess-files in the directory containing netstat.
 
 
-Examples for using cron:
+Example for using cron:
 Open the crontab-editor using 'sudo crontab -e' (to run commands with administrative privileges).
 
 Add following line: (replace 143.25.22.89 with the IP of your gateway-server or use "localhost")
@@ -33,14 +42,38 @@ Don't forget to save your changes.
 Exit the Editor.
 
 
+The amount of history to be collected can be specified by the value of the option
+'$maxNumberOfHistoryEntries' in the file stat.php.
+
+Given our cron-job creating a history-entry every hour (15th minute of every hour), and $maxNumberOfHistoryEntries = e.g. 168,
+168/24 = 7 days are kept.
 
 
-0 * * * * find /var/www/html/netstat/history -type f -mtime +1 -delete
-The command in this line is executed EVERY HOUR and deletes all JSON-files in the
-history-folder that are older than TWO DAYS.
-
+What exactly happens?
 0 * * * * wget -qO /dev/null "http://143.25.22.89/pi-network/stat.php?action=save&key=8A29691737D"
 Where 143.25.22.89 is (just) one IP-address of the server hosting stat.php.
 The command in this line is executed EVERY HOUR and calls the PHP-script 'stat.php' in a way,
 that lets it refresh all JSON-files in the same directory as 'stat.php' and archives them in the
-history-folder.
+history-folder. This happens only, when the correct GET-params are provided, failing to do so or
+not specifying them at all, displays the 'normal' overview-page (status, history);
+
+There are only $maxNumberOfHistoryEntries in the respective history-files at all times.
+Additionally, pre-compredded (gzip) versions of the history-files are placed in the subfolder /history/gzip, which
+are requested by default.
+
+
+
+
+Differences to version 1:
+Version 1 of this application strongly relied on the execution of PHP-code on the Server, only using
+client-side scripting to render the history.
+
+Version 2 made the transition to a predominantly client-side scripting based approach.
+The server only tests the reachability of the nodes and prepares the HTML-Structure.
+The data request, handling and rendering is performed on the client-side, for the status-overview and
+the overview of the history. Furthermore, the author tried to condense the displayed information,
+achieve a clearer arrangement, allow the user more flexibility in data-selection and improve the extensibility of the program as a whole.
+
+Version 1 is still available by its git-Tag, for all who prefer its look and feel or its method of operation.
+After checking out the respective Tag, please adhere to the INSTALL.txt of the Tag of version 1 in oder to properly set-up
+the application.
