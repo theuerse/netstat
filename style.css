@@ -114,6 +114,10 @@ p.propertyTitle {
     display: inline-block;
 }
 
+.tt-input {
+  display: inline-block;
+}
+
 #host-selection > div.bootstrap-tagsinput, #property-selection > div.bootstrap-tagsinput {
   width: 100%;
 }

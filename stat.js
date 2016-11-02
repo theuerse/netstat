@@ -164,6 +164,14 @@ function addUnitOfTraffic(bytes){
   }
 }
 
+// init-textfields by sending enter (fixes spacious width-preset)
+function initTagsinputTextfields(){
+  var e = jQuery.Event("keypress");
+  e.which = 13; // 13 .. enter-key
+  e.keyCode = 13;
+  $(".tt-input").trigger(e);
+}
+
 
 //
 // main entry point of js
@@ -227,7 +235,9 @@ $(document).ready(function() {
   setupPropertyDialog();
   setupPropertySelection();
 
+  initTagsinputTextfields();
+
   if(localStorage.getItem("currentTabIndex") == 1){
     getHostHistoryInformation();
   }
-  });
+});
