@@ -184,7 +184,7 @@ $(document).ready(function() {
 
   // setup progressbar
   progressbar = $( "#progressbar" );
-  var progressLabel = $( ".progress-label" );
+  progressLabel = $( ".progress-label" );
 
   progressbar.progressbar({
     value: false,

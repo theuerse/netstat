@@ -18,6 +18,7 @@ var dateRange = [];
 var graphInformation = {}; // caches graph info before drawing
 var charts = {}; // holds references to drawn charts
 var progressbar;
+var progressLabel;
 
 
 
@@ -174,8 +175,19 @@ function setupHostSelection(){
       .fail(function( jqxhr, textStatus, error ) {
         var err = textStatus + ", " + error;
         console.log( "Request Failed: " + err );
-        progressLabel.text( "Failed to retrieve " + "history/gzip/" + hostname + "_hist.json" );
-        setTimeout(function(){progressbar.hide();}, 2000);
+
+        $.notify({title: "<strong>" + "history/gzip/" + hostname + "_hist.json" + "</strong>", message: ": request failed"},
+          {
+            placement: {from: "bottom", align: "right"},
+            newest_on_top: true,
+            animate: {
+              enter: 'animated fadeInDown',
+              exit: 'animated fadeOutUp'
+            },
+            type: 'danger'
+          });
+        progressLabel.text( "Failed to retrieve History");
+        setTimeout(function(){progressbar.hide();}, 10000);
       });
     }else{
       // immediately update existing charts (data is there)
