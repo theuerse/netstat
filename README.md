@@ -7,13 +7,13 @@ favicon based on https://commons.wikimedia.org/wiki/File:Dashboard_font_awesome.
 
 ## Screenshots
 ### status-overview v1.0
-![status-overview](https://cloud.githubusercontent.com/assets/16044516/19932588/f20ed2b0-a110-11e6-9217-4a1a45a3474c.png)
+![status-overview](https://cloud.githubusercontent.com/assets/16044516/19933076/812a212e-a112-11e6-8040-803018215e44.png)
 
 ### history-overview v1.0
-![history-overview](https://cloud.githubusercontent.com/assets/16044516/19932609/0194c41a-a111-11e6-9fa6-3190d4467470.png)
+![history-overview](https://cloud.githubusercontent.com/assets/16044516/19933111/9ec7f8f0-a112-11e6-84d3-736650d01efb.png)
 
 ### status-overview v2.0
-![status-overview](https://cloud.githubusercontent.com/assets/16044516/19932631/117facc8-a111-11e6-8f09-a4f39f5afa89.png)
+![status-overview](https://cloud.githubusercontent.com/assets/16044516/19933137/b2c657fc-a112-11e6-9df9-26a2bf8fc5fb.png)
 
 ### history-overview v2.0
 ![history-overview](https://cloud.githubusercontent.com/assets/16044516/19932646/1cd415f0-a111-11e6-9b28-696c898a0e2f.png)
