@@ -174,6 +174,8 @@ function setupHostSelection(){
       .fail(function( jqxhr, textStatus, error ) {
         var err = textStatus + ", " + error;
         console.log( "Request Failed: " + err );
+        progressLabel.text( "Failed to retrieve " + "history/gzip/" + hostname + "_hist.json" );
+        setTimeout(function(){progressbar.hide();}, 2000);
       });
     }else{
       // immediately update existing charts (data is there)
