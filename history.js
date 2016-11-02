@@ -287,8 +287,10 @@ function integrateJsonData(hostname, json){
   if(Object.keys(jsonData).length == 1){
     // adding first PI
     json.history.forEach(function(histEntry){
-      //TODO: reliably filter out zone, or find appropriate format-string!
-      jsonData.x.push(histEntry.date.replace("CEST ",""));
+      // Mon Oct 31 01:30:01 CET 2016 , time-zone is second-last
+      var dateParts = histEntry.date.split(" ");
+      dateParts.splice(4,1);
+      jsonData.x.push(dateParts.join(" "));
     });
 
     $("#datefrom").datepicker({
