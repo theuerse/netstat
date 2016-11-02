@@ -17,7 +17,7 @@ history-files:
 sudo a2enmod rewrite
 sudo a2enmod headers
 sudo a2enmod deflate
-sudo service apache2 reboot
+sudo service apache2 restart
 
 Additionally you may have to edit your apache-config file (e.g. /etc/apache/apache.conf),
 allowing "AllowOverride All" for .htaccess-files in the directory containing netstat.

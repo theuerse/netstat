@@ -8,6 +8,7 @@ AddCharset UTF-8 .html .css .php .txt .js .json
 <IfModule mod_headers.c>
     # Serve gzip compressed JS files if they exist
     # and the client accepts gzip.
+    RewriteEngine On
     RewriteCond "%{HTTP:Accept-encoding}" "gzip"
     RewriteCond "%{REQUEST_FILENAME}\.gz" -s
     RewriteRule "^(.*)\.json" "$1\.json\.gz" [QSA]
