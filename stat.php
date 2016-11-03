@@ -218,21 +218,12 @@ if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
   <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
   <!-- Stylesheets -->
-  <link rel="stylesheet" type="text/css" href="inc/css/c3.css">
-  <link rel="stylesheet" type="text/css" href="inc/font-awesome/css/font-awesome.min.css">
-  <link rel="stylesheet" type="text/css" href="inc/css/jquery-ui.css" media="all" />
-  <link rel="stylesheet" type="text/css" href="inc/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="inc/css/bootstrap-theme.min.css">
-  <link rel="stylesheet" type="text/css" href="inc/css/bootstrap-tagsinput.css">
-  <link rel="stylesheet" type="text/css" href="style.css" media="all" />
+  <link rel="stylesheet" type="text/css" href="inc/font-awesome/css/font-awesome.min.css"/>
+  <link rel="stylesheet" type="text/css" href="inc/css/jquery-ui.css" media="all"/>
+  <link rel="stylesheet" type="text/css" href="inc/external.css"/>
+  <link rel="stylesheet" type="text/css" href="style.css"  />
   <!-- JavaScript -->
-  <script type="text/javascript" src="inc/js/d3.js"></script>
-  <script type="text/javascript" src="inc/js/c3.js"></script>
-  <script type="text/javascript" src="inc/js/jquery.js"></script>
-  <script type="text/javascript" src="inc/js/jquery-ui.js"></script>
-  <script type="text/javascript" src="inc/js/typeahead.js"></script>
-  <script type="text/javascript" src="inc/js/bootstrap-tagsinput.js"></script>
-  <script type="text/javascript" src="inc/js/bootstrap-notify.min.js"></script>
+  <script type="text/javascript" src="inc/external.js"></script>
   <script type="text/javascript" src="history.js"></script>
   <script type="text/javascript" src="stat.js"></script>
 </head>
