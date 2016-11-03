@@ -10,7 +10,6 @@ function getHostStatusInformation(){
     // PI# = last octet of IP-address - 10 (192.168.0.12 -> PI2)
     var id = "PI" + (parseInt($(this).attr('id').split('.')[3]) - 10);
     hosts.push(id);
-    //$("#host-selection input[type='text']").eq(2).tagsinput('add', id);
 
     // get current status-files
     $.getJSON(id + ".json").done(function(json){drawStatusOverview(parent, json);})

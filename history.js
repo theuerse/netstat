@@ -168,33 +168,11 @@ function setupHostSelection(){
     var hostname = event.item;
     $("#chk_" + hostname).prop('checked', true);
     $("#chk_" + hostname).button( "refresh" );
-    if(! jsonData.hasOwnProperty(hostname)){
-      $.getJSON("history/gzip/" + hostname + "_hist.json").done(function(json){
-        integrateJsonData(hostname, json);
-      })
-      .fail(function( jqxhr, textStatus, error ) {
-        var err = textStatus + ", " + error;
-        console.log( "Request Failed: " + err );
 
-        $.notify({title: "<strong>" + "history/gzip/" + hostname + "_hist.json" + "</strong>", message: ": request failed"},
-          {
-            placement: {from: "bottom", align: "right"},
-            newest_on_top: true,
-            animate: {
-              enter: 'animated fadeInDown',
-              exit: 'animated fadeOutUp'
-            },
-            type: 'danger'
-          });
-        progressLabel.text( "Failed to retrieve History");
-        setTimeout(function(){progressbar.hide();}, 10000);
-      });
-    }else{
       // immediately update existing charts (data is there)
       for(var propertyName in charts) {
         charts[propertyName].show([hostname],{withLegend: true});
       }
-    }
   });
 
   $("#host-selection input[type='text']" ).eq(2).on('itemRemoved', function(event) {
@@ -386,10 +364,29 @@ function getHostHistoryInformation(){
   progressbar.show();
 
   // for host in hosts, request history_file
-  hosts.forEach(function(host){
-    $("#host-selection input[type='text']").eq(2).tagsinput('add', host);
-  });
+    $.getJSON("history/history.json").done(function(json){
+      for(var fileName in json){
 
-  // progress is updated when a file has been downloaded and integrated
+        host = fileName.replace(".json","");
+        $("#host-selection input[type='text']").eq(2).tagsinput('add', host);
+        integrateJsonData(host, json[fileName]);
+      }
+    })
+    .fail(function(jqxhr, textStatus, error){
+      $.notify({title: "<strong>" + "history/history.json" + "</strong>", message: ": request failed"},
+               {
+               placement: {from: "bottom", align: "right"},
+                newest_on_top: true,
+                animate: {
+                  enter: 'animated fadeInDown',
+                  exit: 'animated fadeOutUp'
+              },
+              type: 'danger'
+            });
+          progressLabel.text( "Failed to retrieve History");
+          setTimeout(function(){progressbar.hide();}, 10000);
+    });
+
+  // progress is updated when a downloaded host-history has been integrated
   // progress 100% -> hide progressbar and display default-charts
 }

@@ -3,20 +3,20 @@ A webserver with PHP (>= 5.2) and the PHP-option 'allow_url_fopen' set to 1 (all
 
 Install:
 After cloning the source-files to e.g. the document-root of your webserver, you need to create
-a history-folder and a subfolder for gzip'ed history-files.
+a history-folder.
 
 cd netstat
-sudo mkdir history && sudo mkdir history/gzip
+sudo mkdir history
 
 Inside the source-directory make the source-directory and the history-subdirectory writable by
 the webserver (e.g. user 'www-data' when using apache)and set up a job (e.g. cronjob)
 in order to enable the maintenance of a history of status-JSON-files.
 
 Giving the webserver permission to write in the source-directory:
-At least the .json-Files (PI0.json, PI1.json, ...) in the source directory, and the subdirectories history and history/gzip
+At least the .json-Files (PI0.json, PI1.json, ...) in the source directory, and the subdirectory history
 must be writable by the webserver.
 
-# ’outside’ the source-directory
+# ’outside’ the source-directory (e.g.)
 sudo chown -R www-data:www-data netstat
 
 
@@ -58,8 +58,8 @@ history-folder. This happens only, when the correct GET-params are provided, fai
 not specifying them at all, displays the 'normal' overview-page (status, history);
 
 There are only $maxNumberOfHistoryEntries in the respective history-files at all times.
-Additionally, pre-compredded (gzip) versions of the history-files are placed in the subfolder /history/gzip, which
-are requested by default.
+Additionally, a pre-compressed (gzip) bundle-version of all history-files is placed in
+the subfolder 'history' (requested by default).
 
 
 

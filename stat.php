@@ -134,10 +134,8 @@ function addToHistory($jsonFilename, $json) {
     exit("File $filename could not be saved in history. Please check directory permissions on directory \'history\'.");
   }
 
-  // save gz-compressed history to be served directly
-  if (file_put_contents("history/gzip/${filename}.gz", gzencode($history_file)) === false) {
-    exit("File $filename.gz could not be saved in history. Please check directory permissions on directory \'history\gzip\'.");
-  }
+  // return updated history to be bundled and compressed before sending it
+  return $history;
 }
 
 // returns the roundtriptime in [ms] if reachable or else -1
@@ -192,11 +190,24 @@ pingHosts(); // test if hosts reachable
 if ($_GET["action"] == "save" && $_GET["key"] == "$historykey") {
   // for every json-file of a Pi we care about
   global $hostlist;
+  $history_bundle = array();
+
   foreach ($hostlist as $jsonFilename => $hostIP) {
     $json = downloadRemoteFile($hostIP, $jsonFilename); // get the current json-file
-    addToHistory($jsonFilename, $json); // add the downloaded file to the history
+
+    $history_file = addToHistory($jsonFilename, $json); // add the downloaded file to the history
+    $history_bundle[$jsonFilename] = $history_file;
+
     echo "History for: ". $jsonFilename . " saved. <br />\n" ;
   }
+
+  // save gz-compressed history to be served directly
+  if (file_put_contents("history/history.json.gz", gzencode(json_encode($history_bundle))) === false) {
+    exit("File history.json.gz could not be saved. Please check directory permissions on directory \'history\gzip\'.");
+  }else{
+    echo "History bundled and compressed, ready to be requested. <br />\n" ;
+  }
+
   exit("History done.<br /> \n"); // end the script at this point
 }else { // normal call
   foreach ($hostlist as $jsonFilename => $hostIP) {
