@@ -25,6 +25,7 @@ function drawStatusOverview(parent,json){
   // header-item: replace text "pending" with date of JSON-creation
   var header = parent.children(".header").first();
   header.text(header.text().replace("pending", json.date));
+  header.text(header.text() + " " + json.Hostname);
 
   // Services
   var html = '<span class="caption">Services: </span><ul>';
@@ -77,7 +78,7 @@ function drawStatusOverview(parent,json){
       '</li>' +
       '<li>' +
         '<span class="caption">HDD: </span>' +
-        '<span class="value">' + json.hddtemp + '.0°C</span>' +
+        '<span class="value">' + json.hddtemp + '</span>' +
       '</li>' +
     '</ul>';
   parent.find('div.temperatures').first().html(html);
