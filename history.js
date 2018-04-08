@@ -281,7 +281,10 @@ function integrateJsonData(hostname, json){
     json.history.forEach(function(histEntry){
       // Mon Oct 31 01:30:01 CET 2016 , time-zone is second-last
       var dateParts = histEntry.date.split(" ");
+      dateParts = dateParts.filter(function(n){ return n != "" });
       dateParts.splice(4,1);
+      if(dateParts[2].length == 1){dateParts[2] = "0" + dateParts[2];}
+
       jsonData.x.push(dateParts.join(" "));
     });
 
@@ -345,7 +348,7 @@ function integrateJsonData(hostname, json){
     data.txbytes.push(histEntry.txbytes / 1000000);
     data.rxbytes.push(histEntry.rxbytes / 1000000);
 
-    data.hddtemp.push(histEntry.hddtemp);
+    data.hddtemp.push(histEntry.hddtemp.replace("°C",""));
     data["Free RAM"].push(histEntry["Free RAM"]);
 
     var parts = histEntry.Uptime.split(" "); //parts[0]...value, parts[1]...unit
